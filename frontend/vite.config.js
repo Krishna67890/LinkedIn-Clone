@@ -8,8 +8,6 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true
   },
-  base: '/', // Important for Vercel
-  server: {
-    port: 3000
-  }
+  base: '/',
+  root: '.', // Important for subdirectory builds
 })
