@@ -8,5 +8,8 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true
   },
-  publicDir: 'public'
+  base: '/', // Important for Vercel
+  server: {
+    port: 3000
+  }
 })
