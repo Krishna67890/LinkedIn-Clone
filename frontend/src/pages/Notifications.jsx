@@ -1,6 +1,6 @@
 // src/pages/Notifications.jsx
-import React, { useContext, useState, useEffect } from 'react';
-import { userDataContext } from '../context/userContext';
+import React, { useState, useEffect } from 'react';
+import { useUserData } from '../context/userContext';
 import { Link } from 'react-router-dom';
 import { FaCheck, FaTimes, FaRegBell, FaBell, FaTrash } from "react-icons/fa";
 
@@ -38,71 +38,121 @@ export function NotificationBell() {
 
 // Main Notifications Page Component
 function Notifications() {
-  const { userData } = useContext(userDataContext);
+  const { userData } = useUserData();
   const [activeFilter, setActiveFilter] = useState('all');
   const [notifications, setNotifications] = useState([]);
+  const [isAutoGenerating, setIsAutoGenerating] = useState(true);
 
-  // Sample notifications data - replace with actual data from your backend
-  const sampleNotifications = [
+  // Sample notification types for auto-generation
+  const notificationTypes = [
     {
-      _id: 1,
-      title: 'Connection Request',
-      message: 'John Doe wants to connect with you',
       type: 'connection_request',
-      isRead: false,
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+      title: 'Connection Request',
+      message: 'wants to connect with you',
       color: 'blue',
       icon: '👋',
-      user: {
-        profileImage: '/default-avatar.png',
-        firstName: 'John',
-        lastName: 'Doe'
-      },
       actionRequired: true
     },
     {
-      _id: 2,
-      title: 'Post Liked',
-      message: 'Jane Smith liked your post about React development',
       type: 'like',
-      isRead: true,
-      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
+      title: 'Post Liked',
+      message: 'liked your post',
       color: 'red',
       icon: '❤️',
-      user: {
-        profileImage: '/default-avatar.png',
-        firstName: 'Jane',
-        lastName: 'Smith'
-      },
       actionRequired: false
     },
     {
-      _id: 3,
-      title: 'New Message',
-      message: 'You have a new message from Alex Johnson',
-      type: 'message',
-      isRead: false,
-      timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
+      type: 'comment',
+      title: 'New Comment',
+      message: 'commented on your post',
       color: 'green',
       icon: '💬',
-      user: {
-        profileImage: '/default-avatar.png',
-        firstName: 'Alex',
-        lastName: 'Johnson'
-      },
+      actionRequired: false
+    },
+    {
+      type: 'message',
+      title: 'New Message',
+      message: 'sent you a message',
+      color: 'purple',
+      icon: '📩',
+      actionRequired: false
+    },
+    {
+      type: 'event',
+      title: 'Event Invitation',
+      message: 'invited you to an event',
+      color: 'orange',
+      icon: '📅',
+      actionRequired: true
+    },
+    {
+      type: 'mention',
+      title: 'Mentioned You',
+      message: 'mentioned you in a post',
+      color: 'yellow',
+      icon: '👤',
       actionRequired: false
     }
   ];
+
+  // Sample user names for auto-generation
+  const userNames = [
+    { firstName: 'John', lastName: 'Doe' },
+    { firstName: 'Jane', lastName: 'Smith' },
+    { firstName: 'Alex', lastName: 'Johnson' },
+    { firstName: 'Sarah', lastName: 'Williams' },
+    { firstName: 'Mike', lastName: 'Brown' },
+    { firstName: 'Emily', lastName: 'Davis' },
+    { firstName: 'David', lastName: 'Wilson' },
+    { firstName: 'Lisa', lastName: 'Taylor' },
+    { firstName: 'Chris', lastName: 'Anderson' },
+    { firstName: 'Amanda', lastName: 'Thomas' }
+  ];
+
+  // Generate a random notification
+  const generateRandomNotification = () => {
+    const notificationType = notificationTypes[Math.floor(Math.random() * notificationTypes.length)];
+    const user = userNames[Math.floor(Math.random() * userNames.length)];
+    
+    return {
+      _id: Date.now() + Math.random().toString(36).substr(2, 9),
+      title: notificationType.title,
+      message: `${user.firstName} ${user.lastName} ${notificationType.message}`,
+      type: notificationType.type,
+      isRead: false,
+      timestamp: new Date().toISOString(),
+      color: notificationType.color,
+      icon: notificationType.icon,
+      user: {
+        profileImage: '/default-avatar.png',
+        firstName: user.firstName,
+        lastName: user.lastName
+      },
+      actionRequired: notificationType.actionRequired
+    };
+  };
+
+  // Auto-generate notifications every 2 seconds
+  useEffect(() => {
+    let interval;
+    
+    if (isAutoGenerating) {
+      interval = setInterval(() => {
+        const newNotification = generateRandomNotification();
+        setNotifications(prev => [newNotification, ...prev]);
+      }, 2000); // 2 seconds
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isAutoGenerating]);
 
   // Load notifications on component mount
   useEffect(() => {
     const savedNotifications = localStorage.getItem('userNotifications');
     if (savedNotifications) {
       setNotifications(JSON.parse(savedNotifications));
-    } else {
-      // Initialize with sample data if no saved notifications
-      setNotifications(sampleNotifications);
-      localStorage.setItem('userNotifications', JSON.stringify(sampleNotifications));
     }
   }, []);
 
@@ -147,12 +197,18 @@ function Notifications() {
     setNotifications(prev => prev.filter(notification => notification._id !== notificationId));
   };
 
+  const toggleAutoGeneration = () => {
+    setIsAutoGenerating(prev => !prev);
+  };
+
   const filteredNotifications = notifications.filter(notification => {
     if (activeFilter === 'unread') return !notification.isRead;
     if (activeFilter === 'connection') return notification.type.includes('connection');
     if (activeFilter === 'mentions') return notification.type === 'mention';
     if (activeFilter === 'messages') return notification.type === 'message';
     if (activeFilter === 'events') return notification.type === 'event';
+    if (activeFilter === 'likes') return notification.type === 'like';
+    if (activeFilter === 'comments') return notification.type === 'comment';
     return true;
   });
 
@@ -190,7 +246,9 @@ function Notifications() {
     connection: notifications.filter(n => n.type.includes('connection')).length,
     mentions: notifications.filter(n => n.type === 'mention').length,
     messages: notifications.filter(n => n.type === 'message').length,
-    events: notifications.filter(n => n.type === 'event').length
+    events: notifications.filter(n => n.type === 'event').length,
+    likes: notifications.filter(n => n.type === 'like').length,
+    comments: notifications.filter(n => n.type === 'comment').length
   };
 
   const filterButtons = [
@@ -199,7 +257,9 @@ function Notifications() {
     { key: 'connection', label: 'Connections', count: notificationCounts.connection },
     { key: 'mentions', label: 'Mentions', count: notificationCounts.mentions },
     { key: 'messages', label: 'Messages', count: notificationCounts.messages },
-    { key: 'events', label: 'Events', count: notificationCounts.events }
+    { key: 'events', label: 'Events', count: notificationCounts.events },
+    { key: 'likes', label: 'Likes', count: notificationCounts.likes },
+    { key: 'comments', label: 'Comments', count: notificationCounts.comments }
   ];
 
   return (
@@ -228,11 +288,29 @@ function Notifications() {
                   <p className="text-gray-600 text-lg">
                     Stay updated with your professional activity
                   </p>
+                  <div className="flex items-center space-x-2 mt-2">
+                    <div className={`w-3 h-3 rounded-full ${isAutoGenerating ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
+                    <span className="text-sm text-gray-600">
+                      Auto-generation: {isAutoGenerating ? 'ON' : 'OFF'} (every 2s)
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
             
             <div className="flex flex-wrap gap-3">
+              <button
+                onClick={toggleAutoGeneration}
+                className={`px-6 py-3 rounded-xl font-semibold shadow-sm flex items-center space-x-2 transition-colors ${
+                  isAutoGenerating 
+                    ? 'bg-red-500 text-white hover:bg-red-600' 
+                    : 'bg-green-500 text-white hover:bg-green-600'
+                }`}
+              >
+                <FaBell className="w-4 h-4" />
+                <span>{isAutoGenerating ? 'Stop' : 'Start'} Auto</span>
+              </button>
+              
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
@@ -242,6 +320,7 @@ function Notifications() {
                   <span>Mark all as read</span>
                 </button>
               )}
+              
               {notifications.length > 0 && (
                 <button
                   onClick={clearAllNotifications}
@@ -251,6 +330,30 @@ function Notifications() {
                   <span>Clear all</span>
                 </button>
               )}
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="bg-blue-50 rounded-xl p-4 text-center">
+              <div className="text-2xl font-bold text-blue-600">{notifications.length}</div>
+              <div className="text-blue-600 text-sm">Total</div>
+            </div>
+            <div className="bg-red-50 rounded-xl p-4 text-center">
+              <div className="text-2xl font-bold text-red-600">{unreadCount}</div>
+              <div className="text-red-600 text-sm">Unread</div>
+            </div>
+            <div className="bg-green-50 rounded-xl p-4 text-center">
+              <div className="text-2xl font-bold text-green-600">
+                {notifications.filter(n => n.actionRequired).length}
+              </div>
+              <div className="text-green-600 text-sm">Action Required</div>
+            </div>
+            <div className="bg-purple-50 rounded-xl p-4 text-center">
+              <div className="text-2xl font-bold text-purple-600">
+                {Math.round(notifications.length / 60)}/min
+              </div>
+              <div className="text-purple-600 text-sm">Rate</div>
             </div>
           </div>
 
@@ -295,6 +398,14 @@ function Notifications() {
                   : `No ${activeFilter} notifications found. Try changing your filter.`
                 }
               </p>
+              {!isAutoGenerating && (
+                <button
+                  onClick={toggleAutoGeneration}
+                  className="mt-4 px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors font-semibold"
+                >
+                  Start Auto-generation
+                </button>
+              )}
             </div>
           ) : (
             filteredNotifications.map(notification => (
@@ -313,9 +424,16 @@ function Notifications() {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 gap-2">
-                      <h3 className="font-semibold text-gray-900 text-lg">
-                        {notification.title}
-                      </h3>
+                      <div className="flex items-center space-x-2">
+                        <h3 className="font-semibold text-gray-900 text-lg">
+                          {notification.title}
+                        </h3>
+                        {!notification.isRead && (
+                          <span className="px-2 py-1 bg-blue-500 text-white text-xs rounded-full">
+                            New
+                          </span>
+                        )}
+                      </div>
                       <div className="flex items-center space-x-3">
                         <span className="text-sm text-gray-500 whitespace-nowrap">
                           {getTimeAgo(notification.timestamp)}
@@ -347,11 +465,9 @@ function Notifications() {
                     
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div className="flex items-center space-x-2">
-                        <img
-                          src={notification.user.profileImage || '/default-avatar.png'}
-                          alt={`${notification.user.firstName} ${notification.user.lastName}`}
-                          className="w-8 h-8 rounded-full border"
-                        />
+                        <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-xs text-white font-bold">
+                          {notification.user.firstName[0]}{notification.user.lastName[0]}
+                        </div>
                         <span className="text-sm text-gray-600 font-medium">
                           {notification.user.firstName} {notification.user.lastName}
                         </span>

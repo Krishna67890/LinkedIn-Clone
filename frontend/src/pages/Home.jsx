@@ -1,9 +1,8 @@
-// src/pages/Home.jsx
-import React, { useContext, useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Nav from '../components/Nav'
 import dp from "../assets/dp.webp"
 import { CiCirclePlus, CiCamera } from "react-icons/ci";
-import { userDataContext } from '../context/userContext';
+import { useUserData } from '../context/userContext'; // ✅ Use custom hook
 import { FaPencilAlt, FaEllipsisH, FaRegComment, FaRegShareSquare, FaRegBookmark, FaRegSmile } from "react-icons/fa";
 import { MdPhotoLibrary, MdVideoLibrary, MdEvent, MdArticle, MdWork, MdSchool, MdPublic } from "react-icons/md";
 import { HiLocationMarker } from "react-icons/hi";
@@ -15,7 +14,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import EmojiPicker from 'emoji-picker-react';
 
 function Home() {
-  let { userData, setUserData, edit, setEdit } = useContext(userDataContext)
+let { userData, setUserData, edit, setEdit } = useUserData()
   
   const { authData, demoLogout } = useAuth()
   

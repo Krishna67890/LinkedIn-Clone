@@ -3,14 +3,14 @@ import logo2 from '../assets/logo2.png'
 import { FaSearch, FaHome, FaUser, FaBell, FaSignOutAlt, FaUsers, FaBriefcase, FaEnvelope } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
 import dp from "../assets/dp.webp"
-import { userDataContext } from '../context/userContext';
+import { useUserData } from '../context/userContext';
 import { useAuth } from '../context/authContext'; // ✅ Fixed import path
 import axios from 'axios';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 function Nav() {
   let [activeSearch, setActiveSearch] = useState(false)
-  let { userData, setUserData } = useContext(userDataContext)
+  let { userData, setUserData } = useUserData()
   let [showPopup, setShowPopup] = useState(false)
   let navigate = useNavigate()
   let location = useLocation()

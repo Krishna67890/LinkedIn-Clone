@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useRef, useCallback } from 'react';
-import { userDataContext } from '../context/userContext';
+import { UserContext } from '../context/userContext';
 import { useAuth } from '/src/context/authContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import FollowersFollowing from '../components/FollowersFollowing';

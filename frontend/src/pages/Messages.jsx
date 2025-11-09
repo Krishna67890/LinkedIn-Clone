@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
-import { userDataContext } from '../context/userContext';
+import { UserContext } from '../context/userContext';
 import { FaSearch, FaPaperPlane, FaReply, FaEllipsisV, FaTimes, FaPaperclip, FaSmile, FaCheck, FaCheckDouble } from 'react-icons/fa';
 import { IoIosSend } from "react-icons/io";
 

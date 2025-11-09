@@ -1,22 +1,20 @@
-// App.jsx
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './context/authContext';
-import { useUserData } from './context/userContext';
+import { AuthProvider, useAuth } from './context/authContext';
+import { UserProvider } from './context/userContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Profile from './pages/Profile';
 import Notifications from './pages/Notifications';
-import Network from './pages/MyNetwork'; // Add this import
-import Jobs from './pages/Jobs'; // Add this import
-import Messages from './pages/Messages'; // Add this import
+import Network from './pages/MyNetwork';
+import Jobs from './pages/Jobs';
+import Messages from './pages/Messages';
 import Nav from './components/Nav';
 
-function App() {
+function AppContent() {
   const { authData } = useAuth();
-  const { userData } = useUserData();
-
+  
   return (
     <div className="App">
       {authData.isAuthenticated && <Nav />}
@@ -41,8 +39,6 @@ function App() {
           path="/notifications" 
           element={authData.isAuthenticated ? <Notifications /> : <Navigate to="/login" />} 
         />
-        
-        {/* Add these missing routes */}
         <Route 
           path="/network" 
           element={authData.isAuthenticated ? <Network /> : <Navigate to="/login" />} 
@@ -57,6 +53,16 @@ function App() {
         />
       </Routes>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <UserProvider>
+        <AppContent />
+      </UserProvider>
+    </AuthProvider>
   );
 }
 

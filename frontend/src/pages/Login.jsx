@@ -2,13 +2,13 @@
 import React, { useContext, useState } from 'react';
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate, Link } from "react-router-dom";
-import { userDataContext } from '../context/userContext';
-import { useAuth } from '../context/authContext'; // ✅ Fixed import path
+import { UserContext } from '../context/userContext'; // ✅ Import UserContext
+import { useAuth } from '../context/authContext';
 
 function Login() {
   const [show, setShow] = useState(false);
-  const { setUserData } = useContext(userDataContext);
-  const { demoLogin } = useAuth(); // ✅ Use useAuth hook
+  const { setUserData } = useContext(UserContext); // ✅ Fixed - use UserContext
+  const { demoLogin } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -65,7 +65,6 @@ function Login() {
         // Remove password from user object before storing
         const { password: _, ...userWithoutPassword } = user;
         
-        // ✅ Use demoLogin from useAuth hook
         demoLogin(userWithoutPassword);
         setUserData(userWithoutPassword);
         
@@ -97,7 +96,6 @@ function Login() {
     setTimeout(() => {
       const { password: _, ...userWithoutPassword } = user;
       
-      // ✅ Use demoLogin from useAuth hook
       demoLogin(userWithoutPassword);
       setUserData(userWithoutPassword);
       

@@ -1,14 +1,14 @@
 // components/EditProfile.jsx
-import React, { useContext, useState, useRef } from 'react';
-import { userDataContext } from '../context/userContext';
-import { useAuth } from '../context/authContext'; // ✅ Use useAuth hook instead of authDataContext
+import React, { useState, useRef } from 'react';
+import { useUserData } from '../context/userContext'; // ✅ Fixed import path
+import { useAuth } from '../context/authContext';
 import axios from 'axios';
 import { GiSplitCross } from "react-icons/gi";
 import { FaCamera, FaSave, FaTimes } from "react-icons/fa";
 
 function EditProfile() {
-  const { userData, setUserData, setEdit } = useContext(userDataContext);
-  const { serverUrl } = useAuth(); // ✅ Use useAuth hook to get serverUrl
+  const { userData, setUserData, setEdit } = useUserData(); // ✅ Fixed - use custom hook
+  const { serverUrl } = useAuth();
   
   const [formData, setFormData] = useState({
     firstName: userData?.firstName || "",
