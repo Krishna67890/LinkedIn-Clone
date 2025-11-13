@@ -2,7 +2,7 @@
 import React, { useContext, useState } from 'react';
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate, Link } from "react-router-dom";
-import { useUserData } from '../context/userContext';// ✅ Import UserContext
+import { useUserData } from '../context/UserContext';// ✅ Import UserContext
 import { useAuth } from '../context/authContext';
 
 function Login() {

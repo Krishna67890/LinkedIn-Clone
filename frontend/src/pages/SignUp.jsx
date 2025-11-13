@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from '../context/authContext';
-import { useUserData } from '../context/userContext'
+import { useUserData } from '../context/UserContext'
 
 function SignUp() {
   const [show, setShow] = useState(false);
