@@ -1,6 +1,6 @@
 // pages/Profile.jsx
 import React, { useContext, useState, useEffect, useRef, useCallback } from 'react';
-// import { UserContext } from '../context/userContext';
+import { useUserData } from '../context/userContext';
 import { useAuth } from '../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import FollowersFollowing from '../components/FollowersFollowing';
