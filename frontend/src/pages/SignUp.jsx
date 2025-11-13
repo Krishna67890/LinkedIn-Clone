@@ -1,18 +1,12 @@
 // pages/SignUp.jsx
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from '../context/authContext';
-// import { UserContext } from '../context/userContext'; // ✅ Import UserContext
 
 function SignUp() {
   const [show, setShow] = useState(false);
   const { demoLogin } = useAuth();
-<<<<<<< HEAD
-//  const { setUserData } = useContext(UserContext); // ✅ Fixed - use UserContext instead of userDataContext
-=======
-  // const { setUserData } = useContext(UserContext); // ✅ Fixed - use UserContext instead of userDataContext
->>>>>>> 8ac26517d125ad49d69dba7d3d5eab86ef39e5cb
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -61,7 +55,7 @@ function SignUp() {
       // Remove password from stored user object
       const { password: _, ...userWithoutPassword } = newUser;
       
-      setUserData(userWithoutPassword);
+      // Remove setUserData call since we don't have UserContext
       demoLogin(userWithoutPassword);
       setSuccess("Account created successfully! Redirecting...");
       
