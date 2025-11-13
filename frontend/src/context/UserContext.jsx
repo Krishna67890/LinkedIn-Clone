@@ -10,3 +10,4 @@ export const UserProvider = ({ children }) => {
     </UserContext>
   );
 };
+
