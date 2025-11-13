@@ -2,11 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './context/authContext'
-<<<<<<< HEAD
 // import { UserProvider } from './context/userContext.jsx';
-=======
 import { UserProvider } from './context/userContext.jsx';
->>>>>>> 6325710eaeab2ba4728a64fb63d2629d057ac6c2
 import App from './App.jsx'
 import './index.css'
 
