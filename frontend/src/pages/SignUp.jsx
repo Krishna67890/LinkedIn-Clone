@@ -7,12 +7,8 @@ import { useAuth } from '../context/authContext';
 function SignUp() {
   const [show, setShow] = useState(false);
   const { demoLogin } = useAuth();
-<<<<<<< HEAD
-
 //  const { setUserData } = useContext(UserContext); // ✅ Fixed - use UserContext instead of userDataContext
   // const { setUserData } = useContext(UserContext); // ✅ Fixed - use UserContext instead of userDataContext
-=======
->>>>>>> f12fefb0824eaf46a81b38d826dbbbd136b596d6
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
