@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/authContext';
-// import { UserProvider } from './context/userContext';
+// Remove the UserProvider import completely
 import Home from './pages/Home';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
@@ -60,9 +59,7 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <UserProvider>
-        <AppContent />
-      </UserProvider>
+      <AppContent />
     </AuthProvider>
   );
 }
