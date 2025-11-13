@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import Nav from '../components/Nav'
 import dp from "../assets/dp.webp"
 import { CiCirclePlus, CiCamera } from "react-icons/ci";
-import { useUserData } from '../context/userContext'; // ✅ Use custom hook
+// import { useUserData } from '../context/userContext'; // ✅ Use custom hook
 import { FaPencilAlt, FaEllipsisH, FaRegComment, FaRegShareSquare, FaRegBookmark, FaRegSmile } from "react-icons/fa";
 import { MdPhotoLibrary, MdVideoLibrary, MdEvent, MdArticle, MdWork, MdSchool, MdPublic } from "react-icons/md";
 import { HiLocationMarker } from "react-icons/hi";

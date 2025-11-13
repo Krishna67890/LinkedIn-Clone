@@ -3,12 +3,12 @@ import React, { useContext, useState } from 'react';
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from '../context/authContext';
-import { UserContext } from '../context/userContext'; // ✅ Import UserContext
+// import { UserContext } from '../context/userContext'; // ✅ Import UserContext
 
 function SignUp() {
   const [show, setShow] = useState(false);
   const { demoLogin } = useAuth();
-  const { setUserData } = useContext(UserContext); // ✅ Fixed - use UserContext instead of userDataContext
+//  const { setUserData } = useContext(UserContext); // ✅ Fixed - use UserContext instead of userDataContext
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",

@@ -1,6 +1,6 @@
 // src/pages/Notifications.jsx
 import React, { useState, useEffect } from 'react';
-import { useUserData } from '../context/userContext';
+// import { useUserData } from '../context/userContext';
 import { Link } from 'react-router-dom';
 import { FaCheck, FaTimes, FaRegBell, FaBell, FaTrash } from "react-icons/fa";
 

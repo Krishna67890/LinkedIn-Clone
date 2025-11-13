@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-import { useUserData } from '../context/userContext'; // ✅ Use custom hook
+// import { useUserData } from '../context/userContext'; // ✅ Use custom hook
 import dp from "../assets/dp.webp";
 import { Link } from 'react-router-dom';
 
 function MyNetwork() {
-  const { userData } = useUserData(); // ✅ Fixed - use custom hook
+  // const { userData } = useUserData(); // ✅ Fixed - use custom hook
   const [activeTab, setActiveTab] = useState('connections');
   const [connections, setConnections] = useState([]);
   const [invitations, setInvitations] = useState([]);
