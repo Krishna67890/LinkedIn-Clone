@@ -1,7 +1,6 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/authContext';
-// Remove the UserProvider import completely
 import Home from './pages/Home';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
@@ -14,6 +13,16 @@ import Nav from './components/Nav';
 
 function AppContent() {
   const { authData } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Handle 404 redirects for client-side routing
+    const validRoutes = ['/', '/login', '/signup', '/profile', '/notifications', '/network', '/jobs', '/messages'];
+    if (!validRoutes.includes(location.pathname)) {
+      navigate('/');
+    }
+  }, [location, navigate]);
   
   return (
     <div className="App">
@@ -51,6 +60,8 @@ function AppContent() {
           path="/messages" 
           element={authData.isAuthenticated ? <Messages /> : <Navigate to="/login" />} 
         />
+        {/* Catch-all route for 404 */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </div>
   );
