@@ -1,6 +1,5 @@
 // pages/Profile.jsx
 import React, { useContext, useState, useEffect, useRef, useCallback } from 'react';
-import { useUserData } from '../context/userContext';
 import { useAuth } from '../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import FollowersFollowing from '../components/FollowersFollowing';
@@ -122,9 +121,10 @@ import {
   SiSketch
 } from "react-icons/si";
 import axios from 'axios';
+import { UserContext } from '../context/UserContext';
 
 function Profile() {
-  const { userData, setUserData } = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext) || {};
   const { serverUrl, authData, setAuthData, demoLogin } = useAuth();
   const navigate = useNavigate();
   
@@ -761,7 +761,7 @@ function Profile() {
     if (displayData.stats?.profileViews >= 1000) newAchievements.push({ name: "Popular Profile", icon: <FaFire />, color: "pink" });
     
     setAchievements(newAchievements);
-  }, [displayData, calculateProfileStrength]);
+  }, [ calculateProfileStrength]);
 
   // Simulate profile views
   useEffect(() => {

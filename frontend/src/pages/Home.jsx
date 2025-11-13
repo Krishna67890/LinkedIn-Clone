@@ -12,6 +12,7 @@ import { FaImages, FaSmile, FaCalendarAlt, FaBell, FaUsers, FaRegHeart, FaHeart,
 import { useAuth } from '../context/authContext';
 import { Link, useNavigate } from 'react-router-dom';
 import EmojiPicker from 'emoji-picker-react';
+import { useUserData } from '../context/UserContext';
 
 function Home() {
 let { userData, setUserData, edit, setEdit } = useUserData()

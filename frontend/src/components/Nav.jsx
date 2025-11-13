@@ -7,6 +7,7 @@ import dp from "../assets/dp.webp"
 import { useAuth } from '../context/authContext'; // ✅ Fixed import path
 import axios from 'axios';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useUserData } from '../context/UserContext';
 
 function Nav() {
   let [activeSearch, setActiveSearch] = useState(false)
