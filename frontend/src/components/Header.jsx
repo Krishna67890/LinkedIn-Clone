@@ -2,7 +2,7 @@
 import React, { useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { NotificationBell } from '../pages/Notifications';
-import { userDataContext } from '../context/userContext';
+//import { userDataContext } from '../context/userContext';
 import { authDataContext } from '../context/authContext';
 
 function Header() {
