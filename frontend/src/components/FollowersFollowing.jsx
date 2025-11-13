@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { GiSplitCross } from "react-icons/gi";
-import { UserContext } from '../context/userContext';
+//import { UserContext } from '../context/userContext';
 import dp from "../assets/dp.webp";
 import { useAuth } from '/src/context/authContext.jsx';
 

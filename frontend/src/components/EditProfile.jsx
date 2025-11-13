@@ -1,6 +1,6 @@
 // components/EditProfile.jsx
 import React, { useState, useRef } from 'react';
-import { useUserData } from '../context/userContext'; // ✅ Fixed import path
+//import { useUserData } from '../context/userContext'; // ✅ Fixed import path
 import { useAuth } from '../context/authContext';
 import axios from 'axios';
 import { GiSplitCross } from "react-icons/gi";
