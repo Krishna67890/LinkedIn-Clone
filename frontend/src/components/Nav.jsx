@@ -3,7 +3,7 @@ import logo2 from '../assets/logo2.png'
 import { FaSearch, FaHome, FaUser, FaBell, FaSignOutAlt, FaUsers, FaBriefcase, FaEnvelope } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
 import dp from "../assets/dp.webp"
-import { useUserData } from '../context/userContext';
+//import { useUserData } from '../context/userContext';
 import { useAuth } from '../context/authContext'; // ✅ Fixed import path
 import axios from 'axios';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
