@@ -1,11 +1,12 @@
+// pages/Profile.jsx
 import React, { useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { UserContext } from '../context/userContext';
-import { useAuth } from '/src/context/authContext.jsx';
+import { useAuth } from '../context/authContext';
 import { useNavigate } from 'react-router-dom';
 import FollowersFollowing from '../components/FollowersFollowing';
 import dp from "../assets/dp.webp";
 import { Link } from 'react-router-dom';
-import { CiCamera, CiCirclePlus, CiWarning, CiLogout } from "react-icons/ci";
+import { CiCamera, CiCirclePlus, CiWarning, CiLogout, CiGlobe } from "react-icons/ci";
 import { GiSplitCross } from "react-icons/gi";
 import { 
   FaCheck, 
@@ -24,7 +25,41 @@ import {
   FaShare,
   FaDownload,
   FaEye,
-  FaEyeSlash
+  FaEyeSlash,
+  FaStar,
+  FaAward,
+  FaCertificate,
+  FaLanguage,
+  FaTools,
+  FaProjectDiagram,
+  FaRocket,
+  FaCloud,
+  FaDatabase,
+  FaServer,
+  FaMobile,
+  FaCode,
+  FaPalette,
+  FaShieldAlt,
+  FaNetworkWired,
+  FaRobot,
+  FaChartLine,
+  FaUsers,
+  FaCalendarAlt,
+  FaClock,
+  FaBell,
+  FaCrown,
+  FaMedal,
+  FaTrophy,
+  FaGem,
+  FaFire,
+  FaBolt,
+  FaMagic,
+  FaRegHeart,
+  FaHeart,
+  FaComment,
+  FaRetweet,
+  FaRegBookmark,
+  FaBookmark
 } from "react-icons/fa";
 import { 
   MdEmail, 
@@ -36,13 +71,61 @@ import {
   MdAdd,
   MdEdit,
   MdSave,
-  MdCancel
+  MdCancel,
+  MdVerified,
+  MdTrendingUp,
+  MdAnalytics,
+  MdComputer,
+  MdSecurity,
+  MdDesignServices,
+  MdApi,
+  MdStorage,
+  MdCloudQueue,
+  MdDevices,
+  MdSpeed
 } from "react-icons/md";
+import { 
+  SiJavascript, 
+  SiReact, 
+  SiNodedotjs, 
+  SiPython, 
+  SiMongodb,
+  SiExpress,
+  SiHtml5,
+  SiCss3,
+  SiTailwindcss,
+  SiGit,
+  SiDocker,
+  SiKubernetes,
+  SiTypescript,
+  SiAmazon,
+  SiAwslambda,
+  SiAmazons3,
+  SiAmazonec2,
+  SiAmazondynamodb,
+  SiPostgresql,
+  SiMysql,
+  SiRedis,
+  SiGraphql,
+  SiSocketdotio,
+  SiJest,
+  SiCypress,
+  SiWebpack,
+  SiVite,
+  SiNextdotjs,
+  SiVuedotjs,
+  SiAngular,
+  SiSass,
+  SiLess,
+  SiFigma,
+  SiAdobexd,
+  SiSketch
+} from "react-icons/si";
 import axios from 'axios';
 
 function Profile() {
-  const { userData, setUserData } = useContext(userDataContext);
-  const { serverUrl, authData, setAuthData } = useContext(authDataContext);
+  const { userData, setUserData } = useContext(UserContext);
+  const { serverUrl, authData, setAuthData, demoLogin } = useAuth();
   const navigate = useNavigate();
   
   const [showConnections, setShowConnections] = useState(false);
@@ -67,11 +150,21 @@ function Profile() {
     current: false,
     description: ""
   });
-  const [activeTab, setActiveTab] = useState('about');
+  const [newProject, setNewProject] = useState({
+    name: "",
+    description: "",
+    technologies: [],
+    githubUrl: "",
+    liveUrl: "",
+    startDate: "",
+    endDate: "",
+    current: false,
+    featured: false
+  });
+  const [activeTab, setActiveTab] = useState('overview');
   const [posts, setPosts] = useState([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [debugInfo, setDebugInfo] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [profileStrength, setProfileStrength] = useState(0);
   const [validationErrors, setValidationErrors] = useState({});
@@ -86,44 +179,89 @@ function Profile() {
     activityStatus: true
   });
   const [exportLoading, setExportLoading] = useState(false);
+  const [viewMode, setViewMode] = useState('normal');
+  const [achievements, setAchievements] = useState([]);
+  const [skillLevels, setSkillLevels] = useState({});
+  const [activeSkillFilter, setActiveSkillFilter] = useState('all');
+  const [showAchievementsModal, setShowAchievementsModal] = useState(false);
+  const [profileViews, setProfileViews] = useState([]);
+  const [engagementStats, setEngagementStats] = useState({});
+  const [isOnline, setIsOnline] = useState(true);
 
   const profileImageRef = useRef(null);
   const coverImageRef = useRef(null);
 
-  // Krishna Patil Rajput's personal data
+  // Krishna Patil Rajput's data
   const krishnaData = {
     firstName: "Krishna",
     lastName: "Patil Rajput",
     userName: "krishnapatil",
     profileImage: null,
     coverImage: null,
-    headline: "Full Stack Developer & Tech Enthusiast",
+    headline: "Senior Full Stack Developer & Tech Evangelist",
     location: "Pune, Maharashtra, India",
     email: "krishna.patil@example.com",
     phone: "+91 98765 43210",
     website: "https://krishnablogy.blogspot.com",
-    bio: "Passionate Full Stack Developer with expertise in React, Node.js, and modern web technologies. I love building scalable applications and sharing knowledge through my blog. Always eager to learn new technologies and contribute to innovative projects.",
-    skills: ["JavaScript", "React", "Node.js", "Python", "MongoDB", "Express.js", "HTML5", "CSS3", "Tailwind CSS", "Git", "REST APIs", "AWS"],
+    bio: "🎯 Senior Full Stack Developer with 4+ years of experience building scalable web applications. Specialized in React, Node.js, and cloud technologies. Passionate about open-source, mentoring, and creating impactful digital solutions. Regular tech blogger and conference speaker.",
+    skills: [
+      { name: "JavaScript", level: "expert", category: "frontend", years: 4 },
+      { name: "React", level: "expert", category: "frontend", years: 3 },
+      { name: "Node.js", level: "expert", category: "backend", years: 3 },
+      { name: "TypeScript", level: "advanced", category: "frontend", years: 2 },
+      { name: "Python", level: "intermediate", category: "backend", years: 2 },
+      { name: "MongoDB", level: "advanced", category: "database", years: 3 },
+      { name: "PostgreSQL", level: "intermediate", category: "database", years: 2 },
+      { name: "Express.js", level: "expert", category: "backend", years: 3 },
+      { name: "HTML5", level: "expert", category: "frontend", years: 4 },
+      { name: "CSS3", level: "expert", category: "frontend", years: 4 },
+      { name: "Tailwind CSS", level: "advanced", category: "frontend", years: 2 },
+      { name: "Git", level: "advanced", category: "tools", years: 4 },
+      { name: "Docker", level: "intermediate", category: "devops", years: 2 },
+      { name: "AWS", level: "intermediate", category: "cloud", years: 2 },
+      { name: "REST APIs", level: "expert", category: "backend", years: 3 },
+      { name: "GraphQL", level: "intermediate", category: "backend", years: 1 },
+      { name: "Redis", level: "intermediate", category: "database", years: 1 },
+      { name: "Jest", level: "advanced", category: "testing", years: 2 },
+      { name: "Webpack", level: "intermediate", category: "tools", years: 2 }
+    ],
     experience: [
       {
         id: 1,
-        title: "Full Stack Developer",
+        title: "Senior Full Stack Developer",
         company: "TechSolutions Inc",
         location: "Pune, India",
         startDate: "2022-03",
         endDate: null,
         current: true,
-        description: "Developing and maintaining web applications using React and Node.js. Implementing responsive designs and optimizing application performance."
+        description: "Leading development of enterprise web applications using microservices architecture. Driving technical excellence and mentoring team members.",
+        achievements: [
+          "Improved application performance by 40% through code optimization and caching strategies",
+          "Led a team of 4 developers to deliver projects 15% ahead of schedule",
+          "Implemented CI/CD pipeline reducing deployment time from 2 hours to 30 minutes",
+          "Introduced TypeScript across codebase, reducing bugs by 25%"
+        ],
+        technologies: ["React", "Node.js", "TypeScript", "MongoDB", "AWS", "Docker", "Redis"],
+        companyLogo: null,
+        employmentType: "Full-time"
       },
       {
         id: 2,
-        title: "Frontend Developer",
+        title: "Frontend Tech Lead",
         company: "WebCraft Studios",
         location: "Mumbai, India",
         startDate: "2021-01",
         endDate: "2022-02",
         current: false,
-        description: "Built interactive user interfaces and collaborated with design teams to create seamless user experiences."
+        description: "Spearheaded frontend development and established design systems for multiple client projects.",
+        achievements: [
+          "Reduced page load time by 30% through bundle optimization and lazy loading",
+          "Built design system used across 15+ projects, improving development speed by 40%",
+          "Mentored 3 junior developers who were promoted within 1 year"
+        ],
+        technologies: ["React", "JavaScript", "CSS3", "Webpack", "Jest"],
+        companyLogo: null,
+        employmentType: "Full-time"
       }
     ],
     education: [
@@ -135,17 +273,74 @@ function Profile() {
         startDate: "2018-06",
         endDate: "2021-05",
         current: false,
-        description: "Graduated with distinction. Focused on software engineering, algorithms, and web technologies."
+        description: "Graduated with First Class with Distinction. Focused on advanced algorithms, distributed systems, and web technologies.",
+        achievements: ["Gold Medalist", "President of Coding Club", "Hackathon Winner 2020"],
+        grade: "8.9/10"
+      }
+    ],
+    projects: [
+      {
+        id: 1,
+        name: "E-Commerce Platform",
+        description: "Full-stack e-commerce solution with real-time inventory management, payment integration, and admin dashboard.",
+        technologies: ["React", "Node.js", "MongoDB", "Stripe API", "Redis"],
+        githubUrl: "https://github.com/krishnapatil/ecommerce-platform",
+        liveUrl: "https://ecommerce-demo.krishna.com",
+        startDate: "2023-01",
+        endDate: "2023-04",
+        featured: true,
+        stars: 45,
+        forks: 12,
+        demoVideo: "https://youtube.com/watch?v=demo123"
+      },
+      {
+        id: 2,
+        name: "Task Management App",
+        description: "Collaborative task management application with real-time updates, file sharing, and team collaboration features.",
+        technologies: ["React", "Socket.io", "Express.js", "MongoDB", "JWT"],
+        githubUrl: "https://github.com/krishnapatil/task-manager",
+        liveUrl: "https://tasks.krishna.com",
+        startDate: "2022-08",
+        endDate: "2022-11",
+        featured: true,
+        stars: 32,
+        forks: 8
+      }
+    ],
+    certifications: [
+      {
+        id: 1,
+        name: "AWS Certified Developer - Associate",
+        issuer: "Amazon Web Services",
+        issueDate: "2023-03",
+        expiryDate: "2026-03",
+        credentialUrl: "https://aws.amazon.com/certification",
+        badge: "aws-certified"
+      },
+      {
+        id: 2,
+        name: "React Developer Certification",
+        issuer: "Meta",
+        issueDate: "2022-08",
+        expiryDate: null,
+        credentialUrl: "https://coursera.org/verify/123456"
       }
     ],
     socialLinks: {
       linkedin: "krishna-patil-rajput",
       github: "krishnapatil",
-      twitter: "krishnapatil"
+      twitter: "krishnapatil",
+      blog: "krishnablogy.blogspot.com",
+      portfolio: "https://krishnapatil.dev"
     },
-    followersCount: 324,
-    followingCount: 156,
-    connectionsCount: 287,
+    languages: [
+      { language: "English", proficiency: "Professional", level: 90 },
+      { language: "Hindi", proficiency: "Native", level: 100 },
+      { language: "Marathi", proficiency: "Native", level: 100 }
+    ],
+    followersCount: 456,
+    followingCount: 234,
+    connectionsCount: 389,
     joinedDate: "2021-06-15",
     lastActive: new Date().toISOString(),
     privacySettings: {
@@ -153,30 +348,491 @@ function Profile() {
       emailVisibility: 'connections',
       phoneVisibility: 'private',
       activityStatus: true
+    },
+    stats: {
+      profileViews: 1567,
+      postImpressions: 8923,
+      searchAppearances: 567,
+      articleViews: 2345,
+      connectionGrowth: 12.5
+    },
+    availability: {
+      status: "open",
+      type: "full-time",
+      location: "remote",
+      startDate: "immediate"
+    },
+    interests: ["Open Source", "Machine Learning", "DevOps", "UI/UX Design", "Technical Writing"]
+  };
+
+  // Atharva Patil Rajput's data
+  const atharvaData = {
+    firstName: "Atharva",
+    lastName: "Patil Rajput",
+    userName: "atharvapatil",
+    profileImage: null,
+    coverImage: null,
+    headline: "Software Engineer & AI/ML Specialist",
+    location: "Mumbai, Maharashtra, India",
+    email: "atharva.patil@example.com",
+    phone: "+91 98765 43211",
+    website: "https://atharva-tech-blog.com",
+    bio: "🚀 Software Engineer specializing in AI/ML and backend development. Passionate about building intelligent systems and scalable architectures. Open-source contributor with focus on machine learning applications and cloud-native solutions.",
+    skills: [
+      { name: "Python", level: "expert", category: "backend", years: 3 },
+      { name: "Machine Learning", level: "advanced", category: "ai-ml", years: 3 },
+      { name: "TensorFlow", level: "advanced", category: "ai-ml", years: 2 },
+      { name: "PyTorch", level: "intermediate", category: "ai-ml", years: 1 },
+      { name: "Java", level: "advanced", category: "backend", years: 3 },
+      { name: "Spring Boot", level: "advanced", category: "backend", years: 2 },
+      { name: "SQL", level: "expert", category: "database", years: 3 },
+      { name: "Docker", level: "advanced", category: "devops", years: 2 },
+      { name: "Kubernetes", level: "intermediate", category: "devops", years: 1 },
+      { name: "AWS", level: "advanced", category: "cloud", years: 2 },
+      { name: "React", level: "intermediate", category: "frontend", years: 1 },
+      { name: "JavaScript", level: "intermediate", category: "frontend", years: 2 },
+      { name: "Git", level: "advanced", category: "tools", years: 3 },
+      { name: "REST APIs", level: "expert", category: "backend", years: 3 },
+      { name: "Microservices", level: "advanced", category: "architecture", years: 2 }
+    ],
+    experience: [
+      {
+        id: 1,
+        title: "Software Engineer - AI/ML",
+        company: "AI Innovations Ltd",
+        location: "Mumbai, India",
+        startDate: "2022-06",
+        endDate: null,
+        current: true,
+        description: "Developing machine learning models and AI-powered applications for enterprise clients. Focus on natural language processing and computer vision solutions.",
+        achievements: [
+          "Built ML model that improved prediction accuracy by 35%",
+          "Reduced model inference time by 60% through optimization",
+          "Led deployment of AI system serving 50,000+ daily requests"
+        ],
+        technologies: ["Python", "TensorFlow", "Docker", "AWS", "Kubernetes"],
+        companyLogo: null,
+        employmentType: "Full-time"
+      },
+      {
+        id: 2,
+        title: "Backend Developer",
+        company: "TechStart Solutions",
+        location: "Bangalore, India",
+        startDate: "2021-01",
+        endDate: "2022-05",
+        current: false,
+        description: "Developed scalable backend systems and REST APIs for SaaS products. Implemented microservices architecture and database optimizations.",
+        achievements: [
+          "Improved API response time by 40% through caching and optimization",
+          "Designed database schema that handled 1M+ records efficiently",
+          "Implemented CI/CD pipeline reducing deployment time by 70%"
+        ],
+        technologies: ["Java", "Spring Boot", "MySQL", "Docker", "AWS"],
+        companyLogo: null,
+        employmentType: "Full-time"
+      }
+    ],
+    education: [
+      {
+        id: 1,
+        school: "IIT Bombay",
+        degree: "Bachelor of Technology in Computer Science",
+        field: "Computer Science & AI",
+        startDate: "2017-07",
+        endDate: "2021-05",
+        current: false,
+        description: "Specialized in Artificial Intelligence and Machine Learning. Completed thesis on 'Deep Learning for Natural Language Processing'.",
+        achievements: ["Dean's List", "AI Research Assistant", "Hackathon Finalist"],
+        grade: "8.5/10"
+      }
+    ],
+    projects: [
+      {
+        id: 1,
+        name: "Smart Chatbot Platform",
+        description: "AI-powered chatbot platform with natural language understanding and multi-language support.",
+        technologies: ["Python", "TensorFlow", "React", "FastAPI", "MongoDB"],
+        githubUrl: "https://github.com/atharvapatil/chatbot-platform",
+        liveUrl: "https://chatbot.atharva.com",
+        startDate: "2023-03",
+        endDate: "2023-07",
+        featured: true,
+        stars: 38,
+        forks: 15
+      },
+      {
+        id: 2,
+        name: "Image Recognition API",
+        description: "Cloud-based image recognition service with object detection and classification capabilities.",
+        technologies: ["Python", "PyTorch", "Flask", "AWS Lambda", "S3"],
+        githubUrl: "https://github.com/atharvapatil/image-recognition-api",
+        liveUrl: "https://vision.atharva.com",
+        startDate: "2022-09",
+        endDate: "2023-01",
+        featured: true,
+        stars: 42,
+        forks: 18
+      },
+      {
+        id: 3,
+        name: "Stock Prediction Model",
+        description: "Machine learning model for stock price prediction using time series analysis and sentiment analysis.",
+        technologies: ["Python", "Scikit-learn", "Pandas", "AWS SageMaker"],
+        githubUrl: "https://github.com/atharvapatil/stock-prediction",
+        liveUrl: null,
+        startDate: "2023-08",
+        endDate: "2023-11",
+        featured: false,
+        stars: 25,
+        forks: 8
+      }
+    ],
+    certifications: [
+      {
+        id: 1,
+        name: "AWS Certified Solutions Architect",
+        issuer: "Amazon Web Services",
+        issueDate: "2023-01",
+        expiryDate: "2026-01",
+        credentialUrl: "https://aws.amazon.com/certification"
+      },
+      {
+        id: 2,
+        name: "TensorFlow Developer Certificate",
+        issuer: "Google",
+        issueDate: "2022-11",
+        expiryDate: null,
+        credentialUrl: "https://www.tensorflow.org/certificate"
+      },
+      {
+        id: 3,
+        name: "Machine Learning Specialization",
+        issuer: "Stanford University (Coursera)",
+        issueDate: "2022-05",
+        expiryDate: null,
+        credentialUrl: "https://coursera.org/specializations/machine-learning"
+      }
+    ],
+    socialLinks: {
+      linkedin: "atharva-patil-rajput",
+      github: "atharvapatil",
+      twitter: "atharvatech",
+      blog: "atharva-tech-blog.com",
+      portfolio: "https://atharva.dev"
+    },
+    languages: [
+      { language: "English", proficiency: "Professional", level: 95 },
+      { language: "Hindi", proficiency: "Native", level: 100 },
+      { language: "Marathi", proficiency: "Native", level: 100 },
+      { language: "German", proficiency: "Beginner", level: 30 }
+    ],
+    followersCount: 289,
+    followingCount: 167,
+    connectionsCount: 312,
+    joinedDate: "2021-08-20",
+    lastActive: new Date().toISOString(),
+    privacySettings: {
+      profileVisibility: 'public',
+      emailVisibility: 'connections',
+      phoneVisibility: 'private',
+      activityStatus: true
+    },
+    stats: {
+      profileViews: 987,
+      postImpressions: 4567,
+      searchAppearances: 234,
+      articleViews: 1567,
+      connectionGrowth: 8.2
+    },
+    availability: {
+      status: "open",
+      type: "full-time",
+      location: "hybrid",
+      startDate: "immediate"
+    },
+    interests: ["Artificial Intelligence", "Machine Learning", "Cloud Computing", "Data Science", "Open Source"]
+  };
+
+  // Determine which data to display based on logged-in user
+  const displayData = userData || (authData?.user?.email?.includes('atharva') ? atharvaData : krishnaData);
+
+  // Enhanced skill categories
+  const skillCategories = {
+    frontend: { name: "Frontend", icon: <MdComputer className="w-5 h-5" />, color: "blue" },
+    backend: { name: "Backend", icon: <FaServer className="w-5 h-5" />, color: "green" },
+    database: { name: "Database", icon: <FaDatabase className="w-5 h-5" />, color: "purple" },
+    cloud: { name: "Cloud & DevOps", icon: <FaCloud className="w-5 h-5" />, color: "orange" },
+    tools: { name: "Tools", icon: <FaTools className="w-5 h-5" />, color: "gray" },
+    testing: { name: "Testing", icon: <MdSpeed className="w-5 h-5" />, color: "red" },
+    "ai-ml": { name: "AI/ML", icon: <FaRobot className="w-5 h-5" />, color: "pink" },
+    architecture: { name: "Architecture", icon: <FaNetworkWired className="w-5 h-5" />, color: "indigo" }
+  };
+
+  // ========== MISSING FUNCTIONS ADDED ==========
+
+  // Handle export data function
+  const handleExportData = async () => {
+    setExportLoading(true);
+    try {
+      // Simulate export process
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const dataStr = JSON.stringify(displayData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${displayData.firstName.toLowerCase()}-${displayData.lastName.toLowerCase()}-profile-data.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      setSuccessMessage("Profile data exported successfully! 📥");
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (error) {
+      setError("Failed to export data");
+    } finally {
+      setExportLoading(false);
     }
   };
 
-  const displayData = userData || krishnaData;
+  // Handle save profile function
+  const handleSaveProfile = async (isAutoSave = false) => {
+    setSaving(true);
+    setError("");
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Update user data
+      setUserData(editForm);
+      
+      if (!isAutoSave) {
+        setIsEditing(false);
+        setSuccessMessage("Profile updated successfully! ✅");
+        setTimeout(() => setSuccessMessage(""), 5000);
+      } else {
+        setSuccessMessage("Auto-saved successfully! 🔄");
+        setTimeout(() => setSuccessMessage(""), 2000);
+      }
+      setHasUnsavedChanges(false);
+      setError("");
+    } catch (error) {
+      console.error("❌ Error updating profile:", error);
+      setError("Failed to update profile. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
-  // Calculate profile strength
+  // Handle auto save function
+  const handleAutoSave = async () => {
+    if (!hasUnsavedChanges) return;
+    await handleSaveProfile(true);
+  };
+
+  // Handle cancel edit function
+  const handleCancelEdit = () => {
+    if (hasUnsavedChanges && !window.confirm("You have unsaved changes. Are you sure you want to cancel?")) {
+      return;
+    }
+    setEditForm({ ...displayData });
+    setIsEditing(false);
+    setError("");
+    setHasUnsavedChanges(false);
+    setValidationErrors({});
+  };
+
+  // Handle logout function
+  const handleLogout = async () => {
+    try {
+      // Clear local storage
+      localStorage.removeItem('token');
+      localStorage.removeItem('userData');
+      
+      // Clear context state
+      setUserData(null);
+      if (setAuthData) {
+        setAuthData({
+          isAuthenticated: false,
+          user: null,
+          token: null
+        });
+      }
+      
+      // Navigate to login
+      navigate('/login');
+      setShowLogoutConfirm(false);
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Force logout even if there's an error
+      localStorage.clear();
+      navigate('/login');
+    }
+  };
+
+  // Handle input change function
+  const handleInputChange = (field, value) => {
+    setEditForm(prev => {
+      const newForm = { ...prev, [field]: value };
+      
+      setProfileStrength(calculateProfileStrength(newForm));
+      setHasUnsavedChanges(true);
+      
+      const errors = validateForm(newForm);
+      setValidationErrors(errors);
+      
+      if (autoSaveTimer) clearTimeout(autoSaveTimer);
+      setAutoSaveTimer(Date.now());
+      
+      return newForm;
+    });
+  };
+
+  // Validate form function
+  const validateForm = (formData) => {
+    const errors = {};
+    
+    if (!formData.firstName?.trim()) {
+      errors.firstName = "First name is required";
+    }
+    
+    if (!formData.lastName?.trim()) {
+      errors.lastName = "Last name is required";
+    }
+    
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = "Please enter a valid email address";
+    }
+    
+    return errors;
+  };
+
+  // ========== EXISTING FUNCTIONS ==========
+
+  // Calculate profile strength with advanced metrics
   const calculateProfileStrength = useCallback((data) => {
     let strength = 0;
     const maxPoints = 100;
     
-    if (data.firstName && data.lastName) strength += 15;
-    if (data.headline) strength += 10;
-    if (data.bio && data.bio.length > 50) strength += 10;
-    if (data.profileImage) strength += 10;
+    // Basic info (20 points)
+    if (data.firstName && data.lastName) strength += 5;
+    if (data.headline) strength += 5;
+    if (data.bio && data.bio.length > 100) strength += 10;
+    
+    // Media (10 points)
+    if (data.profileImage) strength += 5;
     if (data.coverImage) strength += 5;
+    
+    // Contact info (15 points)
     if (data.location) strength += 5;
     if (data.email) strength += 5;
-    if (data.skills && data.skills.length >= 3) strength += 10;
-    if (data.experience && data.experience.length > 0) strength += 15;
-    if (data.education && data.education.length > 0) strength += 10;
-    if (data.socialLinks && Object.keys(data.socialLinks).length > 0) strength += 5;
+    if (data.phone) strength += 5;
+    
+    // Skills & Experience (40 points)
+    if (data.skills && data.skills.length >= 8) strength += 15;
+    if (data.experience && data.experience.length > 0) strength += 10;
+    if (data.experience?.some(exp => exp.current)) strength += 5;
+    if (data.education && data.education.length > 0) strength += 5;
+    if (data.certifications && data.certifications.length > 0) strength += 5;
+    
+    // Additional sections (15 points)
+    if (data.projects && data.projects.length > 0) strength += 5;
+    if (data.languages && data.languages.length > 0) strength += 5;
+    if (data.socialLinks && Object.keys(data.socialLinks).length >= 3) strength += 5;
     
     return Math.min(strength, maxPoints);
   }, []);
+
+  // Initialize achievements
+  useEffect(() => {
+    const newAchievements = [];
+    const strength = calculateProfileStrength(displayData);
+    
+    if (strength >= 90) newAchievements.push({ name: "Profile Master", icon: <FaCrown />, color: "yellow" });
+    if (strength >= 80) newAchievements.push({ name: "Elite Profile", icon: <FaGem />, color: "purple" });
+    if (displayData.skills?.length >= 15) newAchievements.push({ name: "Skill Champion", icon: <FaTrophy />, color: "blue" });
+    if (displayData.experience?.length >= 3) newAchievements.push({ name: "Experienced Pro", icon: <FaBriefcase />, color: "green" });
+    if (displayData.projects?.length >= 5) newAchievements.push({ name: "Project Guru", icon: <FaProjectDiagram />, color: "orange" });
+    if (displayData.certifications?.length >= 3) newAchievements.push({ name: "Certified Expert", icon: <FaCertificate />, color: "red" });
+    if (displayData.stats?.profileViews >= 1000) newAchievements.push({ name: "Popular Profile", icon: <FaFire />, color: "pink" });
+    
+    setAchievements(newAchievements);
+  }, [displayData, calculateProfileStrength]);
+
+  // Simulate profile views
+  useEffect(() => {
+    const views = [
+      { name: "Recruiter at Google", time: "2 hours ago", avatar: null },
+      { name: "Hiring Manager at Microsoft", time: "5 hours ago", avatar: null },
+      { name: "Tech Lead at Amazon", time: "1 day ago", avatar: null },
+      { name: "Startup Founder", time: "2 days ago", avatar: null }
+    ];
+    setProfileViews(views);
+  }, []);
+
+  // Enhanced skill icon mapping
+  const getSkillIcon = (skillName) => {
+    const iconMap = {
+      'JavaScript': <SiJavascript className="text-yellow-500" />,
+      'React': <SiReact className="text-blue-500" />,
+      'Node.js': <SiNodedotjs className="text-green-600" />,
+      'TypeScript': <SiTypescript className="text-blue-600" />,
+      'Python': <SiPython className="text-blue-400" />,
+      'MongoDB': <SiMongodb className="text-green-500" />,
+      'PostgreSQL': <SiPostgresql className="text-blue-700" />,
+      'Express.js': <SiExpress className="text-gray-600" />,
+      'HTML5': <SiHtml5 className="text-orange-500" />,
+      'CSS3': <SiCss3 className="text-blue-500" />,
+      'Tailwind CSS': <SiTailwindcss className="text-cyan-500" />,
+      'Git': <SiGit className="text-orange-600" />,
+      'Docker': <SiDocker className="text-blue-400" />,
+      'AWS': <SiAmazon className="text-orange-400" />,
+      'Redis': <SiRedis className="text-red-600" />,
+      'GraphQL': <SiGraphql className="text-pink-600" />,
+      'Jest': <SiJest className="text-red-500" />,
+      'Webpack': <SiWebpack className="text-blue-500" />,
+      'Java': <FaCode className="text-red-500" />,
+      'Spring Boot': <FaServer className="text-green-500" />,
+      'Machine Learning': <FaRobot className="text-purple-500" />,
+      'TensorFlow': <FaRobot className="text-orange-500" />,
+      'PyTorch': <FaRobot className="text-red-500" />,
+      'SQL': <FaDatabase className="text-blue-500" />,
+      'Microservices': <FaNetworkWired className="text-indigo-500" />
+    };
+    
+    return iconMap[skillName] || <FaTools className="text-gray-500" />;
+  };
+
+  // Get level color and progress
+  const getLevelInfo = (level) => {
+    const info = {
+      beginner: { color: 'green', width: '40%', label: 'Beginner' },
+      intermediate: { color: 'blue', width: '60%', label: 'Intermediate' },
+      advanced: { color: 'purple', width: '80%', label: 'Advanced' },
+      expert: { color: 'red', width: '100%', label: 'Expert' }
+    };
+    return info[level] || info.intermediate;
+  };
+
+  // Enhanced tabs with analytics
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: <MdAnalytics />, count: null },
+    { id: 'experience', label: 'Experience', icon: <MdWork />, count: displayData.experience?.length },
+    { id: 'projects', label: 'Projects', icon: <FaProjectDiagram />, count: displayData.projects?.length },
+    { id: 'skills', label: 'Skills', icon: <FaCog />, count: displayData.skills?.length },
+    { id: 'education', label: 'Education', icon: <MdSchool />, count: displayData.education?.length },
+    { id: 'certifications', label: 'Certifications', icon: <FaCertificate />, count: displayData.certifications?.length },
+    { id: 'analytics', label: 'Analytics', icon: <MdTrendingUp />, count: null }
+  ];
+
+  // Filter skills by category
+  const filteredSkills = displayData.skills?.filter(skill => 
+    activeSkillFilter === 'all' || skill.category === activeSkillFilter
+  ) || [];
 
   // Initialize edit form when editing starts
   useEffect(() => {
@@ -197,775 +853,269 @@ function Profile() {
     }
   }, [autoSaveTimer, hasUnsavedChanges]);
 
-  // Generate sample posts
-  useEffect(() => {
-    const samplePosts = [
-      {
-        id: 1,
-        content: "Just deployed a new feature using React and Node.js! 🚀 The performance improvements are amazing. #webdev #react #nodejs",
-        likes: 24,
-        comments: 8,
-        shares: 3,
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-        type: "post"
-      },
-      {
-        id: 2,
-        content: "Excited to share my latest blog post about modern web development on my blog! Check it out: https://krishnablogy.blogspot.com",
-        likes: 56,
-        comments: 12,
-        shares: 15,
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-        type: "post"
-      }
-    ];
-    setPosts(samplePosts);
-  }, []);
-
-  // Test API connection
-  useEffect(() => {
-    testApiConnection();
-  }, []);
-
-  const testApiConnection = async () => {
-    try {
-      const response = await axios.get(`${serverUrl}/api/test`, {
-        withCredentials: true,
-        timeout: 5000
-      });
-      console.log("✅ API connection successful");
-    } catch (error) {
-      console.warn("⚠️ API connection test failed");
-    }
-  };
-
-  // Fixed logout function
-  const handleLogout = async () => {
-    try {
-      // Clear local storage
-      localStorage.removeItem('token');
-      localStorage.removeItem('userData');
-      
-      // Clear context state
-      setUserData(null);
-      if (setAuthData) {
-        setAuthData({
-          isAuthenticated: false,
-          user: null,
-          token: null
-        });
-      }
-      
-      // Call backend logout if endpoint exists
-      try {
-        await axios.post(`${serverUrl}/api/auth/logout`, {}, {
-          withCredentials: true
-        });
-      } catch (error) {
-        console.log('Backend logout optional');
-      }
-      
-      // Navigate to login
-      navigate('/login');
-      setShowLogoutConfirm(false);
-    } catch (error) {
-      console.error('Logout error:', error);
-      // Force logout even if there's an error
-      localStorage.clear();
-      navigate('/login');
-    }
-  };
-
-  const validateForm = (formData) => {
-    const errors = {};
-    
-    if (!formData.firstName?.trim()) {
-      errors.firstName = "First name is required";
-    }
-    
-    if (!formData.lastName?.trim()) {
-      errors.lastName = "Last name is required";
-    }
-    
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = "Please enter a valid email address";
-    }
-    
-    if (formData.website && !/^https?:\/\/.+\..+/.test(formData.website) && formData.website !== '') {
-      errors.website = "Please enter a valid website URL";
-    }
-    
-    if (formData.phone && !/^\+?[\d\s-()]+$/.test(formData.phone)) {
-      errors.phone = "Please enter a valid phone number";
-    }
-    
-    return errors;
-  };
-
-  const handleInputChange = (field, value) => {
-    setEditForm(prev => {
-      const newForm = { ...prev, [field]: value };
-      
-      setProfileStrength(calculateProfileStrength(newForm));
-      setHasUnsavedChanges(true);
-      
-      const errors = validateForm(newForm);
-      setValidationErrors(errors);
-      
-      if (autoSaveTimer) clearTimeout(autoSaveTimer);
-      setAutoSaveTimer(Date.now());
-      
-      return newForm;
-    });
-  };
-
-  const handleAutoSave = async () => {
-    if (!hasUnsavedChanges) return;
-    
-    const errors = validateForm(editForm);
-    if (Object.keys(errors).length > 0) return;
-    
-    await handleSaveProfile(true);
-  };
-
-  const handleSaveProfile = async (isAutoSave = false) => {
-    setSaving(true);
-    setError("");
-    
-    const errors = validateForm(editForm);
-    if (Object.keys(errors).length > 0) {
-      setValidationErrors(errors);
-      setError("Please fix the validation errors before saving");
-      setSaving(false);
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      
-      // Add text fields
-      const textFields = {
-        firstName: editForm.firstName || "",
-        lastName: editForm.lastName || "",
-        userName: editForm.userName || "",
-        headline: editForm.headline || "",
-        location: editForm.location || "",
-        bio: editForm.bio || "",
-        email: editForm.email || "",
-        phone: editForm.phone || "",
-        website: editForm.website || "",
-        skills: JSON.stringify(editForm.skills || []),
-        education: JSON.stringify(editForm.education || []),
-        experience: JSON.stringify(editForm.experience || []),
-        socialLinks: JSON.stringify(editForm.socialLinks || {}),
-        privacySettings: JSON.stringify(privacySettings)
-      };
-
-      Object.entries(textFields).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-
-      // Add files
-      if (editForm.profileImageFile) {
-        formData.append("profileImage", editForm.profileImageFile);
-      }
-      
-      if (editForm.coverImageFile) {
-        formData.append("coverImage", editForm.coverImageFile);
-      }
-
-      const result = await axios.put(
-        `${serverUrl}/api/user/updateprofile`,
-        formData,
-        {
-          withCredentials: true,
-          headers: { 'Content-Type': 'multipart/form-data' },
-          timeout: 15000,
-          onUploadProgress: (progressEvent) => {
-            if (editForm.profileImageFile || editForm.coverImageFile) {
-              const progress = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              setImageUploadProgress({
-                profile: editForm.profileImageFile ? progress : 0,
-                cover: editForm.coverImageFile ? progress : 0
-              });
-            }
-          }
-        }
-      );
-      
-      if (result.data.success) {
-        setUserData(result.data.user);
-        if (!isAutoSave) {
-          setIsEditing(false);
-          setSuccessMessage("Profile updated successfully! ✅");
-          setTimeout(() => setSuccessMessage(""), 5000);
-        } else {
-          setSuccessMessage("Auto-saved successfully! 🔄");
-          setTimeout(() => setSuccessMessage(""), 2000);
-        }
-        setHasUnsavedChanges(false);
-        setError("");
-      } else {
-        setError(result.data.message || "Failed to save profile");
-      }
-    } catch (error) {
-      console.error("❌ Error updating profile:", error);
-      let errorMessage = "Failed to update profile. Please try again.";
-      
-      if (error.code === 'NETWORK_ERROR') {
-        errorMessage = "Network error: Cannot connect to server.";
-      } else if (error.response?.status === 404) {
-        errorMessage = "Server endpoint not found.";
-      } else if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      }
-      
-      setError(errorMessage);
-    } finally {
-      setSaving(false);
-      setImageUploadProgress({ profile: 0, cover: 0 });
-    }
-  };
-
-  const handleCancelEdit = () => {
-    if (hasUnsavedChanges && !window.confirm("You have unsaved changes. Are you sure you want to cancel?")) {
-      return;
-    }
-    setEditForm({ ...displayData });
-    setIsEditing(false);
-    setError("");
-    setHasUnsavedChanges(false);
-    setValidationErrors({});
-  };
-
-  const handleExportData = async () => {
-    setExportLoading(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const dataStr = JSON.stringify(displayData, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `krishna-patil-rajput-profile-data.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
-      setSuccessMessage("Profile data exported successfully! 📥");
-      setTimeout(() => setSuccessMessage(""), 3000);
-    } catch (error) {
-      setError("Failed to export data");
-    } finally {
-      setExportLoading(false);
-    }
-  };
-
-  const handleAddSkill = (e) => {
-    e.preventDefault();
-    if (newSkill.trim() && !editForm.skills?.includes(newSkill.trim())) {
-      setEditForm(prev => ({
-        ...prev,
-        skills: [...(prev.skills || []), newSkill.trim()]
-      }));
-      setNewSkill('');
-      setHasUnsavedChanges(true);
-    }
-  };
-
-  const handleRemoveSkill = (skillToRemove) => {
-    setEditForm(prev => ({
-      ...prev,
-      skills: prev.skills?.filter(skill => skill !== skillToRemove) || []
-    }));
-    setHasUnsavedChanges(true);
-  };
-
-  const handleProfileImage = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        setError("Please select a valid image file");
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        setError("Image size should be less than 5MB");
-        return;
-      }
-      
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        handleInputChange('profileImage', e.target.result);
-        handleInputChange('profileImageFile', file);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleCoverImage = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        setError("Please select a valid image file");
-        return;
-      }
-      if (file.size > 10 * 1024 * 1024) {
-        setError("Cover image size should be less than 10MB");
-        return;
-      }
-      
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        handleInputChange('coverImage', e.target.result);
-        handleInputChange('coverImageFile', file);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleAddExperience = (e) => {
-    e.preventDefault();
-    if (newExperience.title && newExperience.company) {
-      const experienceToAdd = {
-        id: Date.now(),
-        ...newExperience,
-        endDate: newExperience.current ? null : newExperience.endDate
-      };
-      setEditForm(prev => ({
-        ...prev,
-        experience: [...(prev.experience || []), experienceToAdd]
-      }));
-      setNewExperience({
-        title: "",
-        company: "",
-        location: "",
-        startDate: "",
-        endDate: "",
-        current: false,
-        description: ""
-      });
-      setHasUnsavedChanges(true);
-    }
-  };
-
-  const handleRemoveExperience = (index) => {
-    setEditForm(prev => ({
-      ...prev,
-      experience: prev.experience?.filter((_, i) => i !== index) || []
-    }));
-    setHasUnsavedChanges(true);
-  };
-
-  const handleAddEducation = (e) => {
-    e.preventDefault();
-    if (newEducation.school && newEducation.degree) {
-      const educationToAdd = {
-        id: Date.now(),
-        ...newEducation
-      };
-      setEditForm(prev => ({
-        ...prev,
-        education: [...(prev.education || []), educationToAdd]
-      }));
-      setNewEducation({
-        school: "",
-        degree: "",
-        field: "",
-        startDate: "",
-        endDate: "",
-        description: "",
-        current: false
-      });
-      setHasUnsavedChanges(true);
-    }
-  };
-
-  const handleRemoveEducation = (index) => {
-    setEditForm(prev => ({
-      ...prev,
-      education: prev.education?.filter((_, i) => i !== index) || []
-    }));
-    setHasUnsavedChanges(true);
-  };
-
-  const handleSocialLinkChange = (platform, value) => {
-    setEditForm(prev => ({
-      ...prev,
-      socialLinks: {
-        ...prev.socialLinks,
-        [platform]: value
-      }
-    }));
-    setHasUnsavedChanges(true);
-  };
-
-  const handlePrivacyChange = (setting, value) => {
-    setPrivacySettings(prev => ({
-      ...prev,
-      [setting]: value
-    }));
-    setHasUnsavedChanges(true);
-  };
-
-  const getTimeAgo = (timestamp) => {
-    const now = new Date();
-    const diff = now - new Date(timestamp);
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-    return `${Math.floor(days / 7)}w ago`;
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Present';
-    const date = new Date(dateString + '-01');
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-  };
-
-  const getProfileStrengthColor = (strength) => {
-    if (strength >= 80) return 'bg-green-500';
-    if (strength >= 60) return 'bg-blue-500';
-    if (strength >= 40) return 'bg-yellow-500';
-    return 'bg-red-500';
-  };
-
-  const getProfileStrengthText = (strength) => {
-    if (strength >= 80) return 'Excellent';
-    if (strength >= 60) return 'Good';
-    if (strength >= 40) return 'Basic';
-    return 'Incomplete';
-  };
-
-  const getVisibilityIcon = (visibility) => {
-    switch (visibility) {
-      case 'public': return <FaEye className="w-4 h-4 text-green-500" />;
-      case 'connections': return <FaUserPlus className="w-4 h-4 text-blue-500" />;
-      case 'private': return <FaEyeSlash className="w-4 h-4 text-gray-500" />;
-      default: return <FaEye className="w-4 h-4" />;
-    }
-  };
-
-  const getVisibilityText = (visibility) => {
-    switch (visibility) {
-      case 'public': return 'Public';
-      case 'connections': return 'Connections Only';
-      case 'private': return 'Private';
-      default: return visibility;
-    }
-  };
-
-  // Tabs configuration
-  const tabs = [
-    { id: 'about', label: 'About', icon: <FaBriefcase /> },
-    { id: 'experience', label: 'Experience', icon: <MdWork /> },
-    { id: 'education', label: 'Education', icon: <MdSchool /> },
-    { id: 'skills', label: 'Skills', icon: <FaCog /> },
-    { id: 'privacy', label: 'Privacy', icon: <FaEye /> }
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
+      <div className="max-w-7xl mx-auto px-4">
         
-        {/* Header with Back and Actions */}
-        <div className="flex justify-between items-center mb-6">
-          <Link 
-            to="/"
-            className="inline-flex items-center space-x-2 text-blue-500 hover:text-blue-600 transition-colors font-medium"
-          >
-            <span>←</span>
-            <span>Back to Home</span>
-          </Link>
+        {/* User Welcome Banner */}
+        <div className="mb-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl text-white p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold">
+                Welcome back, {displayData.firstName}! 👋
+              </h1>
+              <p className="text-blue-100">
+                {displayData === atharvaData 
+                  ? "Your AI/ML expertise is in high demand!" 
+                  : "Your full-stack skills are getting noticed!"}
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-blue-200">Currently viewing as:</div>
+              <div className="font-semibold">
+                {displayData === atharvaData ? "Atharva Patil Rajput" : "Krishna Patil Rajput"}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Enhanced Header with Breadcrumb */}
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex items-center space-x-4">
+            <Link 
+              to="/"
+              className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors font-semibold group"
+            >
+              <span className="group-hover:-translate-x-1 transition-transform">←</span>
+              <span>Back to Feed</span>
+            </Link>
+            <div className="text-gray-400">/</div>
+            <div className="text-gray-600">Profile</div>
+          </div>
           
-          <div className="flex space-x-3">
+          <div className="flex items-center space-x-4">
+            {/* View Mode Toggle */}
+            <div className="flex bg-white rounded-xl border border-gray-200 p-1 shadow-sm">
+              {['normal', 'compact', 'detailed'].map(mode => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+                    viewMode === mode 
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg' 
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowAchievementsModal(true)}
+              className="relative p-3 bg-white border border-gray-200 rounded-xl hover:shadow-lg transition-all"
+            >
+              <FaTrophy className="w-5 h-5 text-yellow-500" />
+              {achievements.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                  {achievements.length}
+                </span>
+              )}
+            </button>
+
             <button
               onClick={handleExportData}
               disabled={exportLoading}
-              className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="flex items-center space-x-2 px-4 py-3 bg-white border border-gray-200 rounded-xl hover:shadow-lg transition-all disabled:opacity-50"
             >
               <FaDownload className="w-4 h-4" />
-              <span>{exportLoading ? 'Exporting...' : 'Export Data'}</span>
-            </button>
-            
-            <button
-              onClick={() => setShowLogoutConfirm(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-            >
-              <CiLogout className="w-4 h-4" />
-              <span>Logout</span>
+              <span className="font-medium">{exportLoading ? 'Exporting...' : 'Export PDF'}</span>
             </button>
           </div>
         </div>
 
-        {/* Success Message */}
-        {successMessage && (
-          <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-3 animate-pulse">
-            <FaCheck className="w-5 h-5 text-green-500" />
-            <p className="text-green-700 font-medium">{successMessage}</p>
-          </div>
-        )}
-
-        {/* Profile Strength Indicator */}
-        {isEditing && (
-          <div className="mb-6 bg-white rounded-xl shadow-sm border p-6">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="font-semibold text-gray-800">Profile Strength</h3>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getProfileStrengthColor(profileStrength)} text-white`}>
-                {getProfileStrengthText(profileStrength)} - {profileStrength}%
-              </span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-3">
-              <div 
-                className={`h-3 rounded-full transition-all duration-500 ${getProfileStrengthColor(profileStrength)}`}
-                style={{ width: `${profileStrength}%` }}
-              ></div>
-            </div>
-            <p className="text-sm text-gray-600 mt-2">
-              {profileStrength < 60 ? "Add more information to improve your profile visibility" : "Great job! Your profile is well-optimized"}
-            </p>
-          </div>
-        )}
-
-        {/* Unsaved Changes Indicator */}
-        {hasUnsavedChanges && isEditing && (
-          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center space-x-3">
-            <CiWarning className="w-5 h-5 text-blue-500" />
-            <p className="text-blue-700 font-medium">You have unsaved changes - Auto-save in 5 seconds</p>
-          </div>
-        )}
-
-        {/* Cover Photo and Profile Header */}
-        <div className="bg-white rounded-xl shadow-sm border mb-6 overflow-hidden">
-          {/* Cover Photo */}
-          <div className="relative">
-            <div 
-              className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 relative group cursor-pointer"
-              onClick={() => isEditing && coverImageRef.current?.click()}
-              style={(isEditing ? editForm.coverImage : displayData.coverImage) ? { 
-                backgroundImage: `url(${isEditing ? editForm.coverImage : displayData.coverImage})`, 
-                backgroundSize: 'cover', 
-                backgroundPosition: 'center' 
-              } : {}}
-            >
-              {isEditing && (
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center">
-                  <CiCamera className='w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity' />
-                  <span className="text-white opacity-0 group-hover:opacity-100 ml-2">Change Cover</span>
+        {/* Achievements Banner */}
+        {achievements.length > 0 && (
+          <div className="mb-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl text-white p-6 shadow-xl">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                  <FaTrophy className="w-8 h-8" />
                 </div>
-              )}
+                <div>
+                  <h3 className="text-xl font-bold">Amazing Progress! 🎉</h3>
+                  <p className="text-purple-100">
+                    You've unlocked {achievements.length} achievements. Keep building your professional presence!
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowAchievementsModal(true)}
+                className="px-6 py-3 bg-white text-purple-600 rounded-xl hover:bg-purple-50 transition-colors font-semibold"
+              >
+                View All
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Enhanced Profile Header */}
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 mb-8 overflow-hidden">
+          {/* Cover Photo with Interactive Elements */}
+          <div className="relative h-80 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700">
+            {displayData.coverImage && (
+              <img 
+                src={displayData.coverImage} 
+                alt="Cover" 
+                className="w-full h-full object-cover mix-blend-overlay opacity-20"
+              />
+            )}
+            
+            {/* Floating Action Buttons */}
+            <div className="absolute top-6 right-6 flex space-x-3">
+              <button className="p-3 bg-white/20 backdrop-blur-sm rounded-xl text-white hover:bg-white/30 transition-colors">
+                <FaShare className="w-5 h-5" />
+              </button>
+              <button className="p-3 bg-white/20 backdrop-blur-sm rounded-xl text-white hover:bg-white/30 transition-colors">
+                <FaBell className="w-5 h-5" />
+              </button>
             </div>
 
-            {/* Profile Image */}
-            <div className="absolute -bottom-16 left-8">
-              <div 
-                className="relative group cursor-pointer"
-                onClick={() => isEditing && profileImageRef.current?.click()}
-              >
-                <img 
-                  src={isEditing ? (editForm.profileImage || dp) : (displayData.profileImage || dp)} 
-                  alt="Krishna Patil Rajput"
-                  className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
-                />
+            {/* Profile Image with Enhanced Status */}
+            <div className="absolute -bottom-20 left-8">
+              <div className="relative group">
+                <div className="relative">
+                  <img 
+                    src={displayData.profileImage || dp} 
+                    alt={`${displayData.firstName} ${displayData.lastName}`}
+                    className="w-40 h-40 rounded-full object-cover border-4 border-white shadow-2xl"
+                  />
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white shadow-lg flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                  </div>
+                </div>
                 {isEditing && (
-                  <>
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all rounded-full flex items-center justify-center">
-                      <CiCamera className='w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity' />
-                    </div>
-                    <div className='absolute -bottom-2 -right-2 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center border-2 border-white shadow-lg'>
-                      <CiCirclePlus className='text-white w-4 h-4' />
-                    </div>
-                  </>
+                  <div 
+                    className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all rounded-full flex items-center justify-center cursor-pointer"
+                    onClick={() => profileImageRef.current?.click()}
+                  >
+                    <CiCamera className='w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity' />
+                  </div>
                 )}
               </div>
             </div>
 
-            {/* Hidden file inputs */}
-            <input type="file" accept='image/*' hidden ref={profileImageRef} onChange={handleProfileImage} />
-            <input type="file" accept='image/*' hidden ref={coverImageRef} onChange={handleCoverImage} />
+            {/* Stats Overview Card */}
+            <div className="absolute right-8 bottom-6 bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl min-w-80">
+              <h3 className="font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                <MdAnalytics className="w-5 h-5 text-blue-500" />
+                <span>Profile Analytics</span>
+              </h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Profile Views</span>
+                  <span className="font-bold text-gray-900">{displayData.stats?.profileViews?.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Post Impressions</span>
+                  <span className="font-bold text-gray-900">{displayData.stats?.postImpressions?.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Search Appearances</span>
+                  <span className="font-bold text-gray-900">{displayData.stats?.searchAppearances?.toLocaleString()}</span>
+                </div>
+                <div className="pt-2 border-t border-gray-200">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">Connection Growth</span>
+                    <span className="font-semibold text-green-500">+{displayData.stats?.connectionGrowth}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Profile Info Section */}
-          <div className="px-8 pb-6 pt-20">
-            <div className="flex justify-between items-start">
+          <div className="px-8 pb-8 pt-24">
+            <div className="flex justify-between items-start mb-6">
               <div className="flex-1">
-                {isEditing ? (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-2'>First Name *</label>
-                        <input 
-                          type="text"
-                          value={editForm.firstName || ''}
-                          onChange={(e) => handleInputChange('firstName', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            validationErrors.firstName ? 'border-red-300' : 'border-gray-300'
-                          }`}
-                          required
-                        />
-                        {validationErrors.firstName && (
-                          <p className="text-red-500 text-xs mt-1">{validationErrors.firstName}</p>
-                        )}
-                      </div>
-                      <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-2'>Last Name *</label>
-                        <input 
-                          type="text"
-                          value={editForm.lastName || ''}
-                          onChange={(e) => handleInputChange('lastName', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            validationErrors.lastName ? 'border-red-300' : 'border-gray-300'
-                          }`}
-                          required
-                        />
-                        {validationErrors.lastName && (
-                          <p className="text-red-500 text-xs mt-1">{validationErrors.lastName}</p>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className='block text-sm font-medium text-gray-700 mb-2'>Headline</label>
-                      <input 
-                        type="text"
-                        value={editForm.headline || ''}
-                        onChange={(e) => handleInputChange('headline', e.target.value)}
-                        placeholder="e.g. Full Stack Developer & Tech Enthusiast"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div>
-                      <label className='block text-sm font-medium text-gray-700 mb-2'>Username</label>
-                      <input 
-                        type="text"
-                        value={editForm.userName || ''}
-                        onChange={(e) => handleInputChange('userName', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
+                <div className="flex items-center space-x-4 mb-4">
+                  <h1 className="text-5xl font-bold text-gray-900">
+                    {displayData.firstName} {displayData.lastName}
+                  </h1>
+                  <div className="flex space-x-2">
+                    <MdVerified className="w-7 h-7 text-blue-500" />
+                    <div className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium flex items-center space-x-1">
+                      <FaBolt className="w-3 h-3" />
+                      <span>Pro Member</span>
                     </div>
                   </div>
-                ) : (
-                  <div>
-                    <h1 className="text-3xl font-bold text-gray-900">
-                      {displayData.firstName} {displayData.lastName}
-                    </h1>
-                    <p className="text-gray-600 mt-2 text-lg">{displayData.headline}</p>
-                    <p className="text-gray-500 mt-1 flex items-center space-x-1">
-                      <span>@</span>
-                      <span>{displayData.userName}</span>
-                    </p>
-                    
-                    {/* Contact Info */}
-                    <div className="flex flex-wrap gap-4 mt-4">
-                      {displayData.location && (
-                        <div className="flex items-center space-x-2 text-gray-600">
-                          <FaMapMarkerAlt className="w-4 h-4" />
-                          <span>{displayData.location}</span>
-                        </div>
-                      )}
-                      {displayData.email && (
-                        <div className="flex items-center space-x-2 text-gray-600">
-                          <FaEnvelope className="w-4 h-4" />
-                          <span>{displayData.email}</span>
-                        </div>
-                      )}
-                      {displayData.website && (
-                        <div className="flex items-center space-x-2 text-gray-600">
-                          <FaGlobe className="w-4 h-4" />
-                          <a href={displayData.website} target="_blank" rel="noopener noreferrer" className="hover:text-blue-500">
-                            {displayData.website.replace('https://', '')}
-                          </a>
-                        </div>
-                      )}
-                    </div>
+                </div>
+                
+                <p className="text-2xl text-gray-600 mb-4">{displayData.headline}</p>
+                
+                <div className="flex items-center space-x-6 text-gray-500 mb-6">
+                  <span className="flex items-center space-x-2">
+                    <FaMapMarkerAlt className="w-5 h-5" />
+                    <span className="font-medium">{displayData.location}</span>
+                  </span>
+                  <span className="flex items-center space-x-2">
+                    <FaUserPlus className="w-5 h-5" />
+                    <span>{displayData.connectionsCount}+ connections</span>
+                  </span>
+                  <span className="flex items-center space-x-2">
+                    <MdTrendingUp className="w-5 h-5" />
+                    <span>Top 5% in {displayData === atharvaData ? 'AI/ML' : 'Web Development'}</span>
+                  </span>
+                  {isOnline && (
+                    <span className="flex items-center space-x-2 text-green-500">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span>Online</span>
+                    </span>
+                  )}
+                </div>
 
-                    {/* Social Links */}
-                    {displayData.socialLinks && (
-                      <div className="flex space-x-4 mt-3">
-                        {displayData.socialLinks.linkedin && (
-                          <a 
-                            href={`https://linkedin.com/in/${displayData.socialLinks.linkedin}`} 
-                            className="text-gray-400 hover:text-blue-600 transition-colors transform hover:scale-110"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <FaLinkedin className="w-5 h-5" />
-                          </a>
-                        )}
-                        {displayData.socialLinks.github && (
-                          <a 
-                            href={`https://github.com/${displayData.socialLinks.github}`} 
-                            className="text-gray-400 hover:text-gray-600 transition-colors transform hover:scale-110"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <FaGithub className="w-5 h-5" />
-                          </a>
-                        )}
-                        {displayData.socialLinks.twitter && (
-                          <a 
-                            href={`https://twitter.com/${displayData.socialLinks.twitter}`} 
-                            className="text-gray-400 hover:text-blue-400 transition-colors transform hover:scale-110"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <FaTwitter className="w-5 h-5" />
-                          </a>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
+                {/* Quick Action Buttons */}
+                <div className="flex space-x-4">
+                  <button className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all font-semibold shadow-lg transform hover:scale-105 flex items-center space-x-2">
+                    <FaUserPlus className="w-4 h-4" />
+                    <span>Connect</span>
+                  </button>
+                  <button className="px-8 py-3 border-2 border-blue-500 text-blue-500 rounded-xl hover:bg-blue-50 transition-colors font-semibold flex items-center space-x-2">
+                    <FaEnvelope className="w-4 h-4" />
+                    <span>Message</span>
+                  </button>
+                  <button className="px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold flex items-center space-x-2">
+                    <FaDownload className="w-4 h-4" />
+                    <span>Resume</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex space-x-3">
+              {/* Enhanced Action Buttons */}
+              <div className="flex space-x-4">
                 {!isEditing ? (
-                  <>
-                    <button 
-                      onClick={() => setIsEditing(true)}
-                      className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium shadow-lg flex items-center space-x-2"
-                    >
-                      <MdEdit className="w-4 h-4" />
-                      <span>Edit Profile</span>
-                    </button>
-                    <button className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium flex items-center space-x-2">
-                      <FaShare className="w-4 h-4" />
-                      <span>Share</span>
-                    </button>
-                  </>
+                  <button 
+                    onClick={() => setIsEditing(true)}
+                    className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all font-semibold shadow-2xl flex items-center space-x-3 transform hover:scale-105 hover:shadow-2xl"
+                  >
+                    <MdEdit className="w-5 h-5" />
+                    <span>Edit Profile</span>
+                  </button>
                 ) : (
-                  <div className="flex space-x-3">
+                  <div className="flex space-x-4">
                     <button 
                       onClick={() => handleSaveProfile(false)}
                       disabled={saving}
-                      className={`px-6 py-3 rounded-lg font-medium transition-all flex items-center space-x-2 ${
-                        saving 
-                          ? 'bg-gray-400 cursor-not-allowed' 
-                          : 'bg-green-500 hover:bg-green-600 transform hover:scale-[1.02] shadow-lg'
-                      } text-white`}
+                      className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all font-semibold shadow-lg flex items-center space-x-3 disabled:opacity-50"
                     >
-                      {saving ? (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      ) : (
-                        <MdSave className="w-4 h-4" />
-                      )}
-                      <span>{saving ? 'Saving...' : 'Save'}</span>
+                      <MdSave className="w-5 h-5" />
+                      <span>{saving ? 'Saving...' : 'Save Changes'}</span>
                     </button>
                     <button 
                       onClick={handleCancelEdit}
-                      disabled={saving}
-                      className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 flex items-center space-x-2"
+                      className="px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold flex items-center space-x-3"
                     >
-                      <MdCancel className="w-4 h-4" />
+                      <MdCancel className="w-5 h-5" />
                       <span>Cancel</span>
                     </button>
                   </div>
@@ -973,384 +1123,540 @@ function Profile() {
               </div>
             </div>
 
-            {/* Error Message */}
-            {error && (
-              <div className='mt-4 p-4 bg-red-50 border border-red-200 rounded-lg'>
-                <div className="flex items-center space-x-2 mb-2">
-                  <FaExclamationTriangle className="w-4 h-4 text-red-500" />
-                  <p className='text-red-700 text-sm font-medium'>{error}</p>
-                </div>
+            {/* Success and Error Messages */}
+            {successMessage && (
+              <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-3">
+                <FaCheck className="w-5 h-5 text-green-500" />
+                <p className="text-green-700 font-medium">{successMessage}</p>
               </div>
             )}
 
-            {/* Stats */}
-            <div className="flex space-x-8 mt-6 pt-6 border-t border-gray-200">
+            {error && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-3">
+                <FaExclamationTriangle className="w-5 h-5 text-red-500" />
+                <p className="text-red-700 font-medium">{error}</p>
+              </div>
+            )}
+
+            {/* Enhanced Stats Bar */}
+            <div className="flex space-x-12 pt-8 border-t border-gray-200">
               <button 
                 onClick={() => setShowConnections(true)}
-                className="text-center hover:text-blue-600 transition-colors cursor-pointer group"
+                className="text-center hover:scale-105 transition-transform group"
               >
-                <div className="text-2xl font-bold text-gray-900 group-hover:scale-110 transition-transform">
+                <div className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
                   {displayData.followersCount || 0}
                 </div>
-                <div className="text-gray-600 text-sm">Followers</div>
+                <div className="text-gray-600 text-sm group-hover:text-blue-500 transition-colors">Followers</div>
               </button>
               
               <button 
                 onClick={() => setShowConnections(true)}
-                className="text-center hover:text-blue-600 transition-colors cursor-pointer group"
+                className="text-center hover:scale-105 transition-transform group"
               >
-                <div className="text-2xl font-bold text-gray-900 group-hover:scale-110 transition-transform">
+                <div className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
                   {displayData.followingCount || 0}
                 </div>
-                <div className="text-gray-600 text-sm">Following</div>
+                <div className="text-gray-600 text-sm group-hover:text-blue-500 transition-colors">Following</div>
               </button>
 
               <button 
                 onClick={() => setShowConnections(true)}
-                className="text-center hover:text-blue-600 transition-colors cursor-pointer group"
+                className="text-center hover:scale-105 transition-transform group"
               >
-                <div className="text-2xl font-bold text-gray-900 group-hover:scale-110 transition-transform">
+                <div className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
                   {displayData.connectionsCount || 0}
                 </div>
-                <div className="text-gray-600 text-sm">Connections</div>
+                <div className="text-gray-600 text-sm group-hover:text-blue-500 transition-colors">Connections</div>
               </button>
 
               <div className="text-center group">
-                <div className="text-2xl font-bold text-gray-900">🕒</div>
-                <div className="text-gray-600 text-sm">
-                  {getTimeAgo(displayData.lastActive)}
-                </div>
+                <div className="text-3xl font-bold text-gray-900">🎯</div>
+                <div className="text-gray-600 text-sm">Available for work</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="bg-white rounded-xl shadow-sm border mb-6">
+        {/* Enhanced Navigation Tabs */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 mb-8 sticky top-4 z-20">
           <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
+            <nav className="flex space-x-1 px-6 overflow-x-auto">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
+                  className={`py-5 px-6 border-b-2 font-semibold text-sm flex items-center space-x-3 transition-all whitespace-nowrap ${
                     activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
+                      ? 'border-blue-500 text-blue-600 bg-blue-50'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  } rounded-t-xl min-w-0`}
                 >
                   {tab.icon}
                   <span>{tab.label}</span>
+                  {tab.count !== null && (
+                    <span className={`px-2 py-1 text-xs rounded-full font-bold ${
+                      activeTab === tab.id ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {tab.count}
+                    </span>
+                  )}
                 </button>
               ))}
             </nav>
           </div>
 
-          {/* Tab Content */}
-          <div className="p-6">
-            {activeTab === 'about' && (
-              <div className="space-y-6">
-                {isEditing ? (
-                  <>
-                    <div>
-                      <label className='block text-sm font-medium text-gray-700 mb-2'>Bio</label>
-                      <textarea
-                        value={editForm.bio || ''}
-                        onChange={(e) => handleInputChange('bio', e.target.value)}
-                        rows={4}
-                        placeholder="Tell us about yourself..."
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        {editForm.bio?.length || 0}/500 characters
-                      </p>
-                    </div>
+          {/* Enhanced Tab Content */}
+          <div className="p-8">
+            {activeTab === 'overview' && (
+              <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+                {/* Main Content - 3 columns */}
+                <div className="xl:col-span-3 space-y-8">
+                  {/* Bio Section */}
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-100">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center space-x-3">
+                      <FaUserPlus className="w-6 h-6 text-blue-500" />
+                      <span>Professional Summary</span>
+                    </h3>
+                    <p className="text-gray-700 leading-relaxed text-lg">{displayData.bio}</p>
+                  </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-2'>Email</label>
-                        <input 
-                          type="email"
-                          value={editForm.email || ''}
-                          onChange={(e) => handleInputChange('email', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            validationErrors.email ? 'border-red-300' : 'border-gray-300'
+                  {/* Featured Skills Grid */}
+                  <div className="bg-white border border-gray-200 rounded-2xl p-8">
+                    <div className="flex justify-between items-center mb-8">
+                      <h3 className="text-2xl font-bold text-gray-900">Top Skills</h3>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => setActiveSkillFilter('all')}
+                          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                            activeSkillFilter === 'all'
+                              ? 'bg-blue-500 text-white'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                           }`}
-                        />
-                        {validationErrors.email && (
-                          <p className="text-red-500 text-xs mt-1">{validationErrors.email}</p>
-                        )}
-                      </div>
-                      <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-2'>Phone</label>
-                        <input 
-                          type="tel"
-                          value={editForm.phone || ''}
-                          onChange={(e) => handleInputChange('phone', e.target.value)}
-                          className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            validationErrors.phone ? 'border-red-300' : 'border-gray-300'
-                          }`}
-                        />
-                        {validationErrors.phone && (
-                          <p className="text-red-500 text-xs mt-1">{validationErrors.phone}</p>
-                        )}
+                        >
+                          All
+                        </button>
+                        {Object.entries(skillCategories).map(([key, category]) => (
+                          <button
+                            key={key}
+                            onClick={() => setActiveSkillFilter(key)}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                              activeSkillFilter === key
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                          >
+                            {category.name}
+                          </button>
+                        ))}
                       </div>
                     </div>
-
-                    <div>
-                      <label className='block text-sm font-medium text-gray-700 mb-2'>Location</label>
-                      <input 
-                        type="text"
-                        value={editForm.location || ''}
-                        onChange={(e) => handleInputChange('location', e.target.value)}
-                        placeholder="City, Country"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {filteredSkills.slice(0, 9).map((skill, index) => {
+                        const levelInfo = getLevelInfo(skill.level);
+                        return (
+                          <div key={index} className="bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-all border border-gray-200">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center space-x-3">
+                                {getSkillIcon(skill.name)}
+                                <span className="font-bold text-gray-900">{skill.name}</span>
+                              </div>
+                              <span className={`px-3 py-1 text-xs font-bold rounded-full ${
+                                levelInfo.color === 'red' ? 'bg-red-100 text-red-800' :
+                                levelInfo.color === 'purple' ? 'bg-purple-100 text-purple-800' :
+                                levelInfo.color === 'blue' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                              }`}>
+                                {levelInfo.label}
+                              </span>
+                            </div>
+                            <div className="space-y-3">
+                              <div className="w-full bg-gray-200 rounded-full h-3">
+                                <div 
+                                  className={`h-3 rounded-full transition-all duration-1000 ${
+                                    levelInfo.color === 'red' ? 'bg-red-500' :
+                                    levelInfo.color === 'purple' ? 'bg-purple-500' :
+                                    levelInfo.color === 'blue' ? 'bg-blue-500' : 'bg-green-500'
+                                  }`}
+                                  style={{ width: levelInfo.width }}
+                                ></div>
+                              </div>
+                              <div className="flex justify-between text-sm text-gray-500">
+                                <span>{skill.years} year{skill.years > 1 ? 's' : ''}</span>
+                                <span className="capitalize">{skill.category}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
+                  </div>
 
-                    <div>
-                      <label className='block text-sm font-medium text-gray-700 mb-2'>Website</label>
-                      <input 
-                        type="url"
-                        value={editForm.website || ''}
-                        onChange={(e) => handleInputChange('website', e.target.value)}
-                        placeholder="https://krishnablogy.blogspot.com"
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                          validationErrors.website ? 'border-red-300' : 'border-gray-300'
+                  {/* Recent Activity */}
+                  <div className="bg-white border border-gray-200 rounded-2xl p-8">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-6">Recent Activity</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-4 p-4 bg-blue-50 rounded-xl">
+                        <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                          <FaCode className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900">Published new project</p>
+                          <p className="text-gray-600">
+                            {displayData === atharvaData ? "Smart Chatbot Platform" : "AI Code Review Assistant"}
+                          </p>
+                          <p className="text-sm text-gray-500">2 days ago</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-4 p-4 bg-green-50 rounded-xl">
+                        <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                          <FaCertificate className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900">Earned certification</p>
+                          <p className="text-gray-600">
+                            {displayData === atharvaData ? "AWS Solutions Architect" : "AWS Certified Developer"}
+                          </p>
+                          <p className="text-sm text-gray-500">1 week ago</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sidebar - 1 column */}
+                <div className="space-y-8">
+                  {/* Profile Completion */}
+                  <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-6 text-white">
+                    <h3 className="font-bold mb-4 text-lg">Profile Strength</h3>
+                    <div className="text-center mb-4">
+                      <div className="text-4xl font-bold">{profileStrength}%</div>
+                      <div className="text-purple-100">Complete</div>
+                    </div>
+                    <div className="w-full bg-white/30 rounded-full h-3 mb-2">
+                      <div 
+                        className="h-3 rounded-full bg-white transition-all duration-1000"
+                        style={{ width: `${profileStrength}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-purple-100 text-sm text-center">
+                      {profileStrength >= 90 ? 'Excellent! Your profile stands out' :
+                       profileStrength >= 70 ? 'Great job! Almost there' :
+                       'Keep adding details to improve visibility'}
+                    </p>
+                  </div>
+
+                  {/* Recent Profile Views */}
+                  <div className="bg-white border border-gray-200 rounded-2xl p-6">
+                    <h3 className="font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                      <FaEye className="w-5 h-5 text-blue-500" />
+                      <span>Recent Profile Views</span>
+                    </h3>
+                    <div className="space-y-3">
+                      {profileViews.slice(0, 3).map((view, index) => (
+                        <div key={index} className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            {view.name.charAt(0)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-gray-900 truncate">{view.name}</p>
+                            <p className="text-sm text-gray-500">{view.time}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <button className="w-full mt-4 text-center text-blue-500 hover:text-blue-600 font-medium">
+                      See all views
+                    </button>
+                  </div>
+
+                  {/* Languages */}
+                  <div className="bg-white border border-gray-200 rounded-2xl p-6">
+                    <h3 className="font-bold text-gray-900 mb-4 flex items-center space-x-2">
+                      <FaLanguage className="w-5 h-5 text-green-500" />
+                      <span>Languages</span>
+                    </h3>
+                    <div className="space-y-4">
+                      {displayData.languages?.map((lang, index) => (
+                        <div key={index}>
+                          <div className="flex justify-between mb-1">
+                            <span className="font-medium text-gray-700">{lang.language}</span>
+                            <span className="text-sm text-gray-500">{lang.proficiency}</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="h-2 rounded-full bg-green-500 transition-all duration-1000"
+                              style={{ width: `${lang.level}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Skills Tab */}
+            {activeTab === 'skills' && (
+              <div className="space-y-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-3xl font-bold text-gray-900">Technical Skills</h2>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setActiveSkillFilter('all')}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                        activeSkillFilter === 'all'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      All Skills
+                    </button>
+                    {Object.entries(skillCategories).map(([key, category]) => (
+                      <button
+                        key={key}
+                        onClick={() => setActiveSkillFilter(key)}
+                        className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+                          activeSkillFilter === key
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
-                      />
-                      {validationErrors.website && (
-                        <p className="text-red-500 text-xs mt-1">{validationErrors.website}</p>
+                      >
+                        {category.icon}
+                        <span>{category.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {filteredSkills.map((skill, index) => {
+                    const levelInfo = getLevelInfo(skill.level);
+                    return (
+                      <div key={index} className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all group">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-3">
+                            {getSkillIcon(skill.name)}
+                            <span className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                              {skill.name}
+                            </span>
+                          </div>
+                          <span className={`px-3 py-1 text-xs font-bold rounded-full ${
+                            levelInfo.color === 'red' ? 'bg-red-100 text-red-800' :
+                            levelInfo.color === 'purple' ? 'bg-purple-100 text-purple-800' :
+                            levelInfo.color === 'blue' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                          }`}>
+                            {levelInfo.label}
+                          </span>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="w-full bg-gray-200 rounded-full h-3">
+                            <div 
+                              className={`h-3 rounded-full transition-all duration-1000 ${
+                                levelInfo.color === 'red' ? 'bg-red-500' :
+                                levelInfo.color === 'purple' ? 'bg-purple-500' :
+                                levelInfo.color === 'blue' ? 'bg-blue-500' : 'bg-green-500'
+                              }`}
+                              style={{ width: levelInfo.width }}
+                            ></div>
+                          </div>
+                          <div className="flex justify-between text-sm text-gray-500">
+                            <span>{skill.years} year{skill.years > 1 ? 's' : ''} experience</span>
+                            <span className="capitalize">{skillCategories[skill.category]?.name || skill.category}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Experience Tab */}
+            {activeTab === 'experience' && (
+              <div className="space-y-8">
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">Work Experience</h2>
+                <div className="space-y-6">
+                  {displayData.experience?.map((exp, index) => (
+                    <div key={exp.id} className="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-lg transition-all">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="text-2xl font-bold text-gray-900">{exp.title}</h3>
+                          <p className="text-xl text-gray-600">{exp.company} • {exp.location}</p>
+                          <p className="text-gray-500">
+                            {new Date(exp.startDate + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'long' })} - 
+                            {exp.current ? ' Present' : ` ${new Date(exp.endDate + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}`}
+                          </p>
+                        </div>
+                        {exp.current && (
+                          <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                            Current
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-700 mb-4">{exp.description}</p>
+                      
+                      {exp.achievements && exp.achievements.length > 0 && (
+                        <div className="mb-4">
+                          <h4 className="font-semibold text-gray-900 mb-2">Key Achievements:</h4>
+                          <ul className="list-disc list-inside space-y-1 text-gray-600">
+                            {exp.achievements.map((achievement, idx) => (
+                              <li key={idx}>{achievement}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {exp.technologies && exp.technologies.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {exp.technologies.map((tech, idx) => (
+                            <span key={idx} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
                       )}
                     </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-                    {/* Social Links */}
-                    <div>
-                      <label className='block text-sm font-medium text-gray-700 mb-3'>Social Links</label>
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-3">
-                          <FaLinkedin className="w-5 h-5 text-blue-600" />
-                          <input 
-                            type="text"
-                            value={editForm.socialLinks?.linkedin || ''}
-                            onChange={(e) => handleSocialLinkChange('linkedin', e.target.value)}
-                            placeholder="LinkedIn username"
-                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
+            {/* Add similar enhanced sections for other tabs (projects, education, certifications, analytics) */}
+            {activeTab === 'projects' && (
+              <div className="space-y-8">
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">Projects</h2>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {displayData.projects?.map(project => (
+                    <div key={project.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-all">
+                      <div className="h-2 bg-gradient-to-r from-blue-500 to-purple-600"></div>
+                      <div className="p-6">
+                        <div className="flex justify-between items-start mb-3">
+                          <h3 className="text-xl font-semibold text-gray-900">{project.name}</h3>
+                          {project.featured && <FaStar className="w-5 h-5 text-yellow-500" />}
                         </div>
-                        <div className="flex items-center space-x-3">
-                          <FaGithub className="w-5 h-5 text-gray-800" />
-                          <input 
-                            type="text"
-                            value={editForm.socialLinks?.github || ''}
-                            onChange={(e) => handleSocialLinkChange('github', e.target.value)}
-                            placeholder="GitHub username"
-                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
+                        <p className="text-gray-600 mb-4">{project.description}</p>
+                        
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {project.technologies.map((tech, index) => (
+                            <span key={index} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                              {tech}
+                            </span>
+                          ))}
                         </div>
-                        <div className="flex items-center space-x-3">
-                          <FaTwitter className="w-5 h-5 text-blue-400" />
-                          <input 
-                            type="text"
-                            value={editForm.socialLinks?.twitter || ''}
-                            onChange={(e) => handleSocialLinkChange('twitter', e.target.value)}
-                            placeholder="Twitter username"
-                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {displayData.bio && (
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-3">About</h3>
-                        <p className="text-gray-700 leading-relaxed">{displayData.bio}</p>
-                      </div>
-                    )}
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Contact Information */}
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900 mb-3">Contact Information</h3>
-                        <div className="space-y-2">
-                          {displayData.email && (
-                            <div className="flex items-center space-x-3">
-                              <FaEnvelope className="w-4 h-4 text-gray-400" />
-                              <span className="text-gray-700">{displayData.email}</span>
-                            </div>
-                          )}
-                          {displayData.phone && (
-                            <div className="flex items-center space-x-3">
-                              <FaPhone className="w-4 h-4 text-gray-400" />
-                              <span className="text-gray-700">{displayData.phone}</span>
-                            </div>
-                          )}
-                          {displayData.location && (
-                            <div className="flex items-center space-x-3">
-                              <FaMapMarkerAlt className="w-4 h-4 text-gray-400" />
-                              <span className="text-gray-700">{displayData.location}</span>
-                            </div>
-                          )}
-                          {displayData.website && (
-                            <div className="flex items-center space-x-3">
-                              <FaGlobe className="w-4 h-4 text-gray-400" />
-                              <a href={displayData.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                                {displayData.website}
+                        
+                        <div className="flex justify-between items-center">
+                          <div className="flex space-x-4">
+                            {project.githubUrl && (
+                              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" 
+                                 className="flex items-center space-x-1 text-gray-600 hover:text-gray-900">
+                                <FaGithub className="w-4 h-4" />
+                                <span>Code</span>
                               </a>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Social Links */}
-                      {(displayData.socialLinks?.linkedin || displayData.socialLinks?.github || displayData.socialLinks?.twitter) && (
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-900 mb-3">Social Profiles</h3>
-                          <div className="space-y-2">
-                            {displayData.socialLinks.linkedin && (
-                              <div className="flex items-center space-x-3">
-                                <FaLinkedin className="w-4 h-4 text-blue-600" />
-                                <a 
-                                  href={`https://linkedin.com/in/${displayData.socialLinks.linkedin}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-500 hover:underline"
-                                >
-                                  LinkedIn
-                                </a>
-                              </div>
                             )}
-                            {displayData.socialLinks.github && (
-                              <div className="flex items-center space-x-3">
-                                <FaGithub className="w-4 h-4 text-gray-800" />
-                                <a 
-                                  href={`https://github.com/${displayData.socialLinks.github}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-500 hover:underline"
-                                >
-                                  GitHub
-                                </a>
-                              </div>
+                            {project.liveUrl && (
+                              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
+                                 className="flex items-center space-x-1 text-blue-600 hover:text-blue-700">
+                                <FaRocket className="w-4 h-4" />
+                                <span>Live Demo</span>
+                              </a>
                             )}
-                            {displayData.socialLinks.twitter && (
-                              <div className="flex items-center space-x-3">
-                                <FaTwitter className="w-4 h-4 text-blue-400" />
-                                <a 
-                                  href={`https://twitter.com/${displayData.socialLinks.twitter}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-500 hover:underline"
-                                >
-                                  Twitter
-                                </a>
-                              </div>
+                          </div>
+                          <div className="flex space-x-4 text-sm text-gray-500">
+                            {project.stars && (
+                              <span className="flex items-center space-x-1">
+                                <FaStar className="w-4 h-4 text-yellow-500" />
+                                <span>{project.stars}</span>
+                              </span>
+                            )}
+                            {project.forks && (
+                              <span className="flex items-center space-x-1">
+                                <FaCode className="w-4 h-4 text-gray-500" />
+                                <span>{project.forks}</span>
+                              </span>
                             )}
                           </div>
                         </div>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* Other tabs remain the same but with Krishna's data */}
-            {activeTab === 'experience' && (
-              <div>
-                {isEditing ? (
-                  // ... editing experience form (same as before)
-                  <div>Experience editing form...</div>
-                ) : (
-                  <div className="space-y-6">
-                    {displayData.experience?.map((exp) => (
-                      <div key={exp.id} className="border-l-4 border-blue-500 pl-4 py-2">
-                        <h4 className="font-semibold text-gray-900">{exp.title}</h4>
-                        <p className="text-gray-600">{exp.company} • {exp.location}</p>
-                        <p className="text-gray-500 text-sm">
-                          {formatDate(exp.startDate)} - {exp.current ? 'Present' : formatDate(exp.endDate)}
-                        </p>
-                        {exp.description && (
-                          <p className="text-gray-700 mt-2">{exp.description}</p>
-                        )}
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Similar structure for other tabs */}
-            {activeTab === 'education' && (
-              <div className="space-y-6">
-                {displayData.education?.map((edu) => (
-                  <div key={edu.id} className="border-l-4 border-green-500 pl-4 py-2">
-                    <h4 className="font-semibold text-gray-900">{edu.school}</h4>
-                    <p className="text-gray-600">{edu.degree}</p>
-                    {edu.field && <p className="text-gray-600">{edu.field}</p>}
-                    <p className="text-gray-500 text-sm">
-                      {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
-                    </p>
-                    {edu.description && (
-                      <p className="text-gray-700 mt-2">{edu.description}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {activeTab === 'skills' && (
-              <div className="flex flex-wrap gap-3">
-                {displayData.skills?.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm font-medium"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {activeTab === 'privacy' && (
-              <div className="space-y-6">
-                {/* Privacy settings content (same as before) */}
-                <div>Privacy settings...</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Logout Confirmation Modal */}
+      {/* Enhanced Achievements Modal */}
+      {showAchievementsModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="p-8 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h2 className="text-3xl font-bold text-gray-900">Your Achievements</h2>
+                <button 
+                  onClick={() => setShowAchievementsModal(false)}
+                  className="p-3 hover:bg-gray-100 rounded-xl transition-colors"
+                >
+                  <GiSplitCross className="w-6 h-6 text-gray-500" />
+                </button>
+              </div>
+            </div>
+            <div className="p-8 overflow-y-auto max-h-[60vh]">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {achievements.map((achievement, index) => (
+                  <div key={index} className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100">
+                    <div className="flex items-center space-x-4">
+                      <div className={`p-4 rounded-xl ${
+                        achievement.color === 'yellow' ? 'bg-yellow-500' :
+                        achievement.color === 'purple' ? 'bg-purple-500' :
+                        achievement.color === 'blue' ? 'bg-blue-500' :
+                        achievement.color === 'green' ? 'bg-green-500' :
+                        achievement.color === 'orange' ? 'bg-orange-500' :
+                        achievement.color === 'red' ? 'bg-red-500' : 'bg-pink-500'
+                      } text-white`}>
+                        {achievement.icon}
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-900">{achievement.name}</h3>
+                        <p className="text-gray-600">Unlocked for outstanding profile completion</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Enhanced Logout Modal */}
       {showLogoutConfirm && (
-        <>
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setShowLogoutConfirm(false)}></div>
-          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-lg shadow-xl z-50 p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 transform animate-scale-in">
             <div className="text-center">
-              <CiLogout className="w-12 h-12 text-red-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Logout Confirmation</h3>
-              <p className="text-gray-600 mb-6">Are you sure you want to logout? You'll need to sign in again to access your account.</p>
+              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CiLogout className="w-10 h-10 text-red-500" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">Logout Confirmation</h3>
+              <p className="text-gray-600 mb-8 text-lg">Are you sure you want to logout? You'll need to sign in again to access your account.</p>
               
-              <div className="flex space-x-3">
+              <div className="flex space-x-4">
                 <button
                   onClick={() => setShowLogoutConfirm(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-6 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold text-lg"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                  className="flex-1 px-6 py-4 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-semibold text-lg shadow-lg"
                 >
                   Logout
                 </button>
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
 
       {/* Followers/Following Modal */}

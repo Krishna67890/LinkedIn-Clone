@@ -2,13 +2,13 @@
 import React, { useContext, useState } from 'react';
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from '../context/authContext'; // ✅ Import useAuth
-import { UserContext } from '../context/userContext';
+import { useAuth } from '../context/authContext';
+import { UserContext } from '../context/userContext'; // ✅ Import UserContext
 
 function SignUp() {
   const [show, setShow] = useState(false);
-  const { demoLogin } = useAuth(); // ✅ Use useAuth hook
-  const { setUserData } = useContext(userDataContext);
+  const { demoLogin } = useAuth();
+  const { setUserData } = useContext(UserContext); // ✅ Fixed - use UserContext instead of userDataContext
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -58,7 +58,7 @@ function SignUp() {
       const { password: _, ...userWithoutPassword } = newUser;
       
       setUserData(userWithoutPassword);
-      demoLogin(userWithoutPassword); // ✅ Use demoLogin from useAuth
+      demoLogin(userWithoutPassword);
       setSuccess("Account created successfully! Redirecting...");
       
       setTimeout(() => {
@@ -87,7 +87,16 @@ function SignUp() {
         lastName: "Patil Rajput",
         email: `krishna${Date.now()}@demo.com`,
         userName: `krishnapatil${Date.now()}`,
-        password: "demo123"
+        password: "demo123",
+        headline: "Full Stack Developer & Tech Enthusiast",
+        location: "Pune, Maharashtra, India",
+        profileImage: null,
+        skills: ["JavaScript", "React", "Node.js", "Python", "MongoDB"],
+        followersCount: 324,
+        followingCount: 156,
+        connectionsCount: 287,
+        joinedDate: new Date().toISOString(),
+        lastActive: new Date().toISOString()
       };
     } else {
       demoData = {
@@ -95,7 +104,16 @@ function SignUp() {
         lastName: "Patil Rajput",
         email: `atharva${Date.now()}@demo.com`,
         userName: `atharvapatil${Date.now()}`,
-        password: "demo123"
+        password: "demo123",
+        headline: "Software Engineer & Open Source Contributor",
+        location: "Mumbai, Maharashtra, India", 
+        profileImage: null,
+        skills: ["Java", "Spring Boot", "AWS", "Docker", "Kubernetes"],
+        followersCount: 189,
+        followingCount: 234,
+        connectionsCount: 156,
+        joinedDate: new Date().toISOString(),
+        lastActive: new Date().toISOString()
       };
     }
     

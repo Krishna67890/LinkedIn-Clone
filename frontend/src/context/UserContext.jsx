@@ -1,3 +1,4 @@
+// context/userContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from './authContext';
@@ -19,10 +20,34 @@ export function UserProvider({ children }) {
   
   const { serverUrl } = useAuth();
 
-  // ... your context logic
+  // Add your context logic here
+  // For example:
+  useEffect(() => {
+    // You can add logic to fetch user data on app start
+    // or when authentication changes
+    const fetchUserData = async () => {
+      try {
+        // Your API calls to fetch user data
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [serverUrl]);
+
+  const value = {
+    userData,
+    setUserData,
+    edit,
+    setEdit,
+    loading
+  };
 
   return (
-    <UserContext.Provider value={{ userData, setUserData, edit, setEdit, loading }}>
+    <UserContext.Provider value={value}>
       {children}
     </UserContext.Provider>
   );
