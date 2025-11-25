@@ -1,13 +1,13 @@
 import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { GiSplitCross } from "react-icons/gi";
-//import { UserContext } from '../context/userContext';
+import { UserContext } from '../context/UserContext';
 import dp from "../assets/dp.webp";
-import { useAuth } from '/src/context/authContext.jsx';
+import { AuthContext } from '/src/context/AuthContext.jsx';
 
 function FollowersFollowing() {
-  const { edit, setEdit, userData } = useContext(userDataContext);
-  const { serverUrl } = useContext(authContext);
+  const { edit, setEdit, userData } = useContext(UserContext);
+  const { serverUrl } = useContext(AuthContext);
 
   const [activeTab, setActiveTab] = useState('followers'); // 'followers' or 'following'
   const [followers, setFollowers] = useState([]);
