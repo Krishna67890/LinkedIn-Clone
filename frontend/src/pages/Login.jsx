@@ -2,12 +2,12 @@
 import React, { useContext, useState } from 'react';
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate, Link } from "react-router-dom";
-import { useUserData } from '../context/userContext';// ✅ Import UserContext
+import { useUserData } from '../context/UserContext';
 import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const [show, setShow] = useState(false);
-  const { userData, setUserData } = useUserData(); // ✅ Fixed - use UserContext
+  const { userData, setUserData } = useUserData(); 
   const { demoLogin } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
