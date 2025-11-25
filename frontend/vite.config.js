@@ -4,32 +4,27 @@ import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, command }) => {
-  // Load env file based on `mode` in the current directory
   const env = loadEnv(mode, process.cwd(), '')
-
   const isProduction = mode === 'production'
   const isBuild = command === 'build'
 
   return {
     plugins: [react()],
-
-    // Base public path when served in production or development
     base: isProduction ? './' : '/',
 
     // Build configuration
     build: {
       outDir: 'dist',
-      sourcemap: !isProduction, // Disable sourcemaps in production for smaller bundle
-      minify: isProduction ? 'terser' : 'esbuild', // Use terser for better minification in production
+      sourcemap: !isProduction,
+      minify: isProduction ? 'terser' : 'esbuild',
       terserOptions: {
         compress: {
-          drop_console: isProduction, // Remove console.log in production
+          drop_console: isProduction,
           drop_debugger: true,
         },
       },
       rollupOptions: {
         output: {
-          // Code splitting for better caching
           manualChunks: (id) => {
             if (id.includes('node_modules')) {
               if (id.includes('react') || id.includes('react-dom')) {
@@ -44,7 +39,6 @@ export default defineConfig(({ mode, command }) => {
               return 'vendor-other'
             }
           },
-          // File naming for better caching
           chunkFileNames: 'assets/js/[name]-[hash].js',
           entryFileNames: 'assets/js/[name]-[hash].js',
           assetFileNames: (assetInfo) => {
@@ -61,25 +55,21 @@ export default defineConfig(({ mode, command }) => {
             return 'assets/[name]-[hash][extname]'
           },
         },
-        // External dependencies that shouldn't be bundled
-        external: [],
       },
-      // Chunk size warnings
       chunkSizeWarningLimit: 1600,
     },
 
     // Server configuration
     server: {
       port: 3000,
-      host: true, // Listen on all addresses
-      open: !isBuild, // Automatically open browser only in dev
+      host: true,
+      open: !isBuild,
       cors: true,
-      strictPort: true, // Throw error if port is occupied
+      strictPort: true,
       historyApiFallback: {
         disableDotRule: true,
         index: '/index.html'
       },
-      // Proxy API requests in development
       proxy: {
         '/api': {
           target: env.VITE_API_URL || 'http://localhost:5000',
@@ -88,14 +78,9 @@ export default defineConfig(({ mode, command }) => {
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
       },
-      // Watch configuration
-      watch: {
-        usePolling: false,
-        ignored: ['**/node_modules/**', '**/dist/**'],
-      },
     },
 
-    // Preview configuration (preview production build)
+    // Preview configuration
     preview: {
       port: 4173,
       host: true,
@@ -122,7 +107,7 @@ export default defineConfig(({ mode, command }) => {
 
     // CSS configuration
     css: {
-      devSourcemap: true, // Source maps for CSS in development
+      devSourcemap: true,
       modules: {
         localsConvention: 'camelCase',
         generateScopedName: isProduction
@@ -132,15 +117,11 @@ export default defineConfig(({ mode, command }) => {
       preprocessorOptions: {
         scss: {
           charset: false,
-          additionalData: `
-            @import "@styles/variables.scss";
-            @import "@styles/mixins.scss";
-          `,
         },
       },
     },
 
-    // Environment variables that will be available in your app
+    // Environment variables
     define: {
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
@@ -155,19 +136,17 @@ export default defineConfig(({ mode, command }) => {
         'axios',
       ],
       exclude: ['js-big-decimal'],
-      force: false, // Set to true to force dependency pre-bundling
     },
 
     // Esbuild configuration
     esbuild: {
       pure: isProduction ? ['console.log', 'debugger'] : [],
-      legalComments: 'none', // Remove legal comments
+      legalComments: 'none',
     },
 
-    // Worker configuration
-    worker: {
-      format: 'es',
-      plugins: [react()],
-    },
+    // ✅ FIXED: Worker configuration - removed or simplified
+    // worker: {
+    //   format: 'es',
+    // },
   }
 })
