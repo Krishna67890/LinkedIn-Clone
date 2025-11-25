@@ -9,15 +9,15 @@ import { HiLocationMarker } from "react-icons/hi";
 import EditProfile from '../components/EditProfile';
 import { GiSplitCross } from "react-icons/gi";
 import { FaImages, FaSmile, FaCalendarAlt, FaBell, FaUsers, FaRegHeart, FaHeart, FaRegThumbsUp, FaThumbsUp, FaLinkedin } from "react-icons/fa";
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import EmojiPicker from 'emoji-picker-react';
 
 function Home() {
-let { userData, setUserData, edit, setEdit } = useUserData()
-  
+  let { userData, setUserData, edit, setEdit } = useUserData()
+
   const { authData, demoLogout } = useAuth()
-  
+
   let [frontendImage, setFrontendImage] = useState("")
   let [backendImage, setBackendImage] = useState("")
   let [description, setDescription] = useState("")
@@ -57,7 +57,7 @@ let { userData, setUserData, edit, setEdit } = useUserData()
   const loadUserPosts = async () => {
     try {
       setIsLoadingPosts(true);
-      
+
       // Use demo data instead of API call
       const demoUserPosts = [
         {
@@ -103,7 +103,7 @@ let { userData, setUserData, edit, setEdit } = useUserData()
           hashtags: ["webdev", "learning", "project"]
         }
       ];
-      
+
       setUserPosts(demoUserPosts);
     } catch (error) {
       console.error("Error loading user posts:", error);
@@ -249,13 +249,13 @@ let { userData, setUserData, edit, setEdit } = useUserData()
         alert('Image size should be less than 5MB');
         return;
       }
-      
+
       // Validate file type
       if (!file.type.startsWith('image/')) {
         alert('Please select an image file');
         return;
       }
-      
+
       setBackendImage(file)
       setFrontendImage(URL.createObjectURL(file))
     }
@@ -297,10 +297,10 @@ let { userData, setUserData, edit, setEdit } = useUserData()
         audience: audience,
         hashtags: description.match(/#\w+/g) || []
       };
-      
+
       // Add to user posts
       setUserPosts(prev => [newPost, ...prev]);
-      
+
       // Reset form
       setUploadPost(false);
       setDescription("");
@@ -308,10 +308,10 @@ let { userData, setUserData, edit, setEdit } = useUserData()
       setBackendImage(null);
       setAudience('public');
       setShowEmojiPicker(false);
-      
+
       // Show success message
       alert('Post created successfully! (Demo Mode)');
-      
+
     } catch (error) {
       console.error("❌ Error creating post:", error);
       alert('Failed to create post. Please try again.');
@@ -323,23 +323,23 @@ let { userData, setUserData, edit, setEdit } = useUserData()
   const handleLike = (postId, isUserPost = false) => {
     // Update UI immediately without API call
     if (isUserPost) {
-      setUserPosts(posts => posts.map(post => 
-        post.id === postId 
-          ? { 
-              ...post, 
-              likes: post.liked ? post.likes - 1 : post.likes + 1,
-              liked: !post.liked
-            }
+      setUserPosts(posts => posts.map(post =>
+        post.id === postId
+          ? {
+            ...post,
+            likes: post.liked ? post.likes - 1 : post.likes + 1,
+            liked: !post.liked
+          }
           : post
       ));
     } else {
-      setPosts(posts => posts.map(post => 
-        post.id === postId 
-          ? { 
-              ...post, 
-              likes: post.liked ? post.likes - 1 : post.likes + 1,
-              liked: !post.liked
-            }
+      setPosts(posts => posts.map(post =>
+        post.id === postId
+          ? {
+            ...post,
+            likes: post.liked ? post.likes - 1 : post.likes + 1,
+            liked: !post.liked
+          }
           : post
       ));
     }
@@ -348,14 +348,14 @@ let { userData, setUserData, edit, setEdit } = useUserData()
   const handleSave = (postId, isUserPost = false) => {
     // Update UI immediately without API call
     if (isUserPost) {
-      setUserPosts(posts => posts.map(post => 
-        post.id === postId 
+      setUserPosts(posts => posts.map(post =>
+        post.id === postId
           ? { ...post, saved: !post.saved }
           : post
       ));
     } else {
-      setPosts(posts => posts.map(post => 
-        post.id === postId 
+      setPosts(posts => posts.map(post =>
+        post.id === postId
           ? { ...post, saved: !post.saved }
           : post
       ));
@@ -373,7 +373,7 @@ let { userData, setUserData, edit, setEdit } = useUserData()
     const minutes = Math.floor(diff / 60000);
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
-    
+
     if (minutes < 1) return "Just now";
     if (minutes < 60) return `${minutes}m ago`;
     if (hours < 24) return `${hours}h ago`;
@@ -426,7 +426,7 @@ let { userData, setUserData, edit, setEdit } = useUserData()
   return (
     <div className='min-h-screen bg-[#f3f2f0]'>
       {edit && <EditProfile />}
-      
+
       {/* Enhanced Header */}
       <header className="bg-white shadow-sm border-b sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -441,26 +441,26 @@ let { userData, setUserData, edit, setEdit } = useUserData()
 
             {/* Navigation */}
             <nav className="flex items-center space-x-6">
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="flex flex-col items-center space-y-1 text-blue-500 border-b-2 border-blue-500 pb-1"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23 9v2h-2v7a3 3 0 01-3 3h-4v-6h-4v6H6a3 3 0 01-3-3v-7H1V9l11-7z"/>
+                  <path d="M23 9v2h-2v7a3 3 0 01-3 3h-4v-6h-4v6H6a3 3 0 01-3-3v-7H1V9l11-7z" />
                 </svg>
                 <span className="text-xs">Home</span>
               </Link>
 
-              <Link 
-                to="/network" 
+              <Link
+                to="/network"
                 className="flex flex-col items-center space-y-1 text-gray-600 hover:text-gray-900"
               >
                 <FaUsers className="w-6 h-6" />
                 <span className="text-xs">Network</span>
               </Link>
 
-              <Link 
-                to="/notifications" 
+              <Link
+                to="/notifications"
                 className="flex flex-col items-center space-y-1 text-gray-600 hover:text-gray-900"
               >
                 <FaBell className="w-6 h-6" />
@@ -475,16 +475,16 @@ let { userData, setUserData, edit, setEdit } = useUserData()
                 <svg className="w-4 h-4 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                <input 
-                  type="text" 
-                  placeholder="Search..." 
+                <input
+                  type="text"
+                  placeholder="Search..."
                   className="bg-transparent border-none focus:outline-none text-sm w-40"
                 />
               </div>
 
               {/* Notification Bell */}
-              <Link 
-                to="/notifications" 
+              <Link
+                to="/notifications"
                 className="flex items-center text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100"
               >
                 <FaBell className="w-5 h-5" />
@@ -493,9 +493,9 @@ let { userData, setUserData, edit, setEdit } = useUserData()
               {/* User Profile */}
               <div className="flex items-center space-x-2 cursor-pointer">
                 <div className="w-8 h-8 rounded-full overflow-hidden">
-                  <img 
-                    src={userData?.profileImage || dp} 
-                    alt="Profile" 
+                  <img
+                    src={userData?.profileImage || dp}
+                    alt="Profile"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -511,36 +511,36 @@ let { userData, setUserData, edit, setEdit } = useUserData()
       {/* Main Content */}
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
         <div className='grid grid-cols-1 lg:grid-cols-12 gap-6'>
-          
+
           {/* Left Sidebar - Profile Card */}
           <div className='lg:col-span-3 space-y-6'>
             {/* Enhanced Profile Card */}
             <div className='bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden sticky top-24'>
               {/* Cover Photo */}
               <div className='h-20 bg-gradient-to-r from-blue-500 to-purple-600 relative'>
-                <button 
+                <button
                   onClick={() => setEdit(true)}
                   className='absolute right-2 top-2 p-1 bg-black bg-opacity-50 rounded-full hover:bg-opacity-70 transition-all'
                 >
                   <CiCamera className='w-4 h-4 text-white' />
                 </button>
               </div>
-              
+
               {/* Profile Info */}
               <div className='px-4 pb-4'>
                 <div className='flex flex-col items-center -mt-8'>
                   {/* Profile Image */}
-                  <div 
+                  <div
                     className='w-16 h-16 rounded-full border-4 border-white overflow-hidden cursor-pointer shadow-lg mb-3'
                     onClick={() => setEdit(true)}
                   >
-                    <img 
-                      src={userData?.profileImage || dp} 
-                      alt="Profile" 
+                    <img
+                      src={userData?.profileImage || dp}
+                      alt="Profile"
                       className='w-full h-full object-cover'
                     />
                   </div>
-                  
+
                   {/* User Info */}
                   <div className='text-center mb-4'>
                     <h2 className='font-semibold text-gray-900 text-lg leading-tight'>
@@ -574,7 +574,7 @@ let { userData, setUserData, edit, setEdit } = useUserData()
                   </div>
 
                   {/* Edit Profile Button */}
-                  <button 
+                  <button
                     onClick={() => setEdit(true)}
                     className='w-full py-2 px-4 border border-blue-500 text-blue-500 rounded-full font-medium hover:bg-blue-50 transition-colors text-sm flex items-center justify-center'
                   >
@@ -598,7 +598,7 @@ let { userData, setUserData, edit, setEdit } = useUserData()
                     <p className='text-gray-500 text-xs mt-1'>{post.time}</p>
                   </div>
                 ))}
-                <button 
+                <button
                   onClick={() => setUploadPost(true)}
                   className='text-blue-500 hover:text-blue-600 text-sm font-medium w-full text-center pt-2 border-t border-gray-200'
                 >
@@ -614,22 +614,22 @@ let { userData, setUserData, edit, setEdit } = useUserData()
             <div className='bg-white rounded-lg shadow-sm border border-gray-200 p-4'>
               <div className='flex items-center space-x-3 mb-3'>
                 <div className='w-12 h-12 rounded-full overflow-hidden'>
-                  <img 
-                    src={userData?.profileImage || dp} 
-                    alt="Profile" 
+                  <img
+                    src={userData?.profileImage || dp}
+                    alt="Profile"
                     className='w-full h-full object-cover'
                   />
                 </div>
-                <button 
+                <button
                   onClick={() => setUploadPost(true)}
                   className='flex-1 text-left px-4 py-3 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors text-gray-600 text-sm'
                 >
                   Start a post, {userData?.firstName || 'User'}
                 </button>
               </div>
-              
+
               <div className='flex justify-between'>
-                <button 
+                <button
                   onClick={() => setUploadPost(true)}
                   className='flex items-center space-x-2 text-gray-600 hover:text-blue-500 transition-colors px-4 py-2 rounded-lg hover:bg-gray-50 flex-1 justify-center'
                 >
@@ -658,11 +658,10 @@ let { userData, setUserData, edit, setEdit } = useUserData()
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                      activeTab === tab
+                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeTab === tab
                         ? 'bg-blue-50 text-blue-500'
                         : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                      }`}
                   >
                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
                   </button>
@@ -681,7 +680,7 @@ let { userData, setUserData, edit, setEdit } = useUserData()
             {/* Enhanced Posts */}
             {filteredPosts.map((post, index) => {
               const isUserPost = userPosts.some(userPost => userPost.id === post.id);
-              
+
               return (
                 <div key={`${post.id}-${index}`} className='bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden transition-all hover:shadow-md'>
                   {/* Post Header */}
@@ -708,11 +707,11 @@ let { userData, setUserData, edit, setEdit } = useUserData()
                         <FaEllipsisH className='w-4 h-4' />
                       </button>
                     </div>
-                    
+
                     {/* Post Content */}
                     <div className='mt-3'>
                       <p className='text-gray-800 leading-relaxed whitespace-pre-line'>{post.content}</p>
-                      
+
                       {/* Hashtags */}
                       {post.hashtags.length > 0 && (
                         <div className='flex flex-wrap gap-2 mt-2'>
@@ -728,9 +727,9 @@ let { userData, setUserData, edit, setEdit } = useUserData()
                     {/* Post Image */}
                     {post.image && (
                       <div className='mt-3 rounded-lg overflow-hidden border border-gray-200'>
-                        <img 
-                          src={post.image} 
-                          alt="Post content" 
+                        <img
+                          src={post.image}
+                          alt="Post content"
                           className='w-full h-auto max-h-96 object-cover cursor-pointer'
                           onClick={() => window.open(post.image, '_blank')}
                         />
@@ -750,11 +749,10 @@ let { userData, setUserData, edit, setEdit } = useUserData()
 
                   {/* Post Actions */}
                   <div className='px-4 py-2 border-t border-gray-100 grid grid-cols-4 gap-1'>
-                    <button 
+                    <button
                       onClick={() => handleLike(post.id, isUserPost)}
-                      className={`flex items-center justify-center space-x-2 transition-colors py-2 px-4 rounded-lg hover:bg-gray-50 ${
-                        post.liked ? 'text-blue-500' : 'text-gray-600 hover:text-blue-500'
-                      }`}
+                      className={`flex items-center justify-center space-x-2 transition-colors py-2 px-4 rounded-lg hover:bg-gray-50 ${post.liked ? 'text-blue-500' : 'text-gray-600 hover:text-blue-500'
+                        }`}
                     >
                       {post.liked ? <FaThumbsUp className='w-4 h-4' /> : <FaRegThumbsUp className='w-4 h-4' />}
                       <span className='font-medium'>Like</span>
@@ -767,11 +765,10 @@ let { userData, setUserData, edit, setEdit } = useUserData()
                       <FaRegShareSquare className='w-4 h-4' />
                       <span className='font-medium'>Share</span>
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleSave(post.id, isUserPost)}
-                      className={`flex items-center justify-center space-x-2 transition-colors py-2 px-4 rounded-lg hover:bg-gray-50 ${
-                        post.saved ? 'text-blue-500' : 'text-gray-600 hover:text-blue-500'
-                      }`}
+                      className={`flex items-center justify-center space-x-2 transition-colors py-2 px-4 rounded-lg hover:bg-gray-50 ${post.saved ? 'text-blue-500' : 'text-gray-600 hover:text-blue-500'
+                        }`}
                     >
                       <FaRegBookmark className='w-4 h-4' />
                       <span className='font-medium'>Save</span>
@@ -787,7 +784,7 @@ let { userData, setUserData, edit, setEdit } = useUserData()
                 <div className="text-gray-400 text-6xl mb-4">📝</div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No posts yet</h3>
                 <p className="text-gray-600 mb-4">Be the first to share something with your network!</p>
-                <button 
+                <button
                   onClick={() => setUploadPost(true)}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full font-medium transition-colors"
                 >
@@ -820,7 +817,7 @@ let { userData, setUserData, edit, setEdit } = useUserData()
                         <p className='text-gray-400 text-xs'>{connection.mutualConnections} mutual connections</p>
                       </div>
                     </div>
-                    <button 
+                    <button
                       onClick={() => handleConnect(connection.id)}
                       className='text-blue-500 border border-blue-500 rounded-full px-3 py-1 text-sm hover:bg-blue-50 transition-colors whitespace-nowrap'
                     >
@@ -884,7 +881,7 @@ let { userData, setUserData, edit, setEdit } = useUserData()
               {/* Header */}
               <div className='flex items-center justify-between mb-4'>
                 <h2 className='text-xl font-semibold text-gray-900'>Create a post</h2>
-                <button 
+                <button
                   onClick={() => !loading && setUploadPost(false)}
                   className='text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50'
                   disabled={loading}
@@ -896,9 +893,9 @@ let { userData, setUserData, edit, setEdit } = useUserData()
               {/* User Info */}
               <div className='flex items-center space-x-3 mb-4'>
                 <div className='w-12 h-12 rounded-full overflow-hidden'>
-                  <img 
-                    src={userData?.profileImage || dp} 
-                    alt="Profile" 
+                  <img
+                    src={userData?.profileImage || dp}
+                    alt="Profile"
                     className='w-full h-full object-cover'
                   />
                 </div>
@@ -906,7 +903,7 @@ let { userData, setUserData, edit, setEdit } = useUserData()
                   <h3 className='font-semibold text-gray-900'>
                     {userData?.firstName} {userData?.lastName}
                   </h3>
-                  <select 
+                  <select
                     value={audience}
                     onChange={(e) => setAudience(e.target.value)}
                     className='text-sm text-gray-600 border-none bg-transparent focus:outline-none cursor-pointer'
@@ -933,7 +930,7 @@ let { userData, setUserData, edit, setEdit } = useUserData()
                 {frontendImage && (
                   <div className='mt-4 relative'>
                     <img src={frontendImage} alt="Post content" className='w-full max-h-80 object-cover rounded-lg' />
-                    <button 
+                    <button
                       onClick={() => {
                         setFrontendImage("");
                         setBackendImage(null);
@@ -950,7 +947,7 @@ let { userData, setUserData, edit, setEdit } = useUserData()
               {/* Emoji Picker */}
               {showEmojiPicker && (
                 <div className="absolute bottom-20 left-6 z-10">
-                  <EmojiPicker 
+                  <EmojiPicker
                     onEmojiClick={handleEmojiClick}
                     width={300}
                     height={400}
@@ -963,14 +960,14 @@ let { userData, setUserData, edit, setEdit } = useUserData()
                 <span className='text-sm text-gray-600'>Add to your post</span>
                 <div className='flex items-center space-x-2'>
                   <input type="file" ref={image} hidden onChange={handleImage} accept="image/*" disabled={loading} />
-                  <button 
+                  <button
                     onClick={() => image.current.click()}
                     className='p-2 text-gray-600 hover:bg-gray-100 rounded transition-colors disabled:opacity-50'
                     disabled={loading}
                   >
                     <FaImages className='w-5 h-5' />
                   </button>
-                  <button 
+                  <button
                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                     className='p-2 text-gray-600 hover:bg-gray-100 rounded transition-colors disabled:opacity-50'
                     disabled={loading}
@@ -994,11 +991,10 @@ let { userData, setUserData, edit, setEdit } = useUserData()
               <button
                 onClick={handleUploadPost}
                 disabled={(!description.trim() && !backendImage) || loading || description.length > 1000}
-                className={`w-full mt-4 py-3 rounded-full font-semibold transition-colors flex items-center justify-center ${
-                  (description.trim() || backendImage) && !loading && description.length <= 1000
-                    ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+                className={`w-full mt-4 py-3 rounded-full font-semibold transition-colors flex items-center justify-center ${(description.trim() || backendImage) && !loading && description.length <= 1000
+                    ? 'bg-blue-500 hover:bg-blue-600 text-white'
                     : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                }`}
+                  }`}
               >
                 {loading ? (
                   <>

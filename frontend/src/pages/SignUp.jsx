@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from '../context/authContext';
-import { useUserData } from '../context/userContext'
+import { useAuth } from '../context/AuthContext';
+import { useUserData } from '../context/UserContext'
 
 function SignUp() {
   const [show, setShow] = useState(false);
@@ -33,13 +33,13 @@ function SignUp() {
     setLoading(true);
     setErr("");
     setSuccess("");
-    
+
     try {
       console.log('🔄 Creating demo account...', formData);
-      
+
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       // Create user object for demo
       const newUser = {
         ...formData,
@@ -56,15 +56,15 @@ function SignUp() {
 
       // Remove password from stored user object
       const { password: _, ...userWithoutPassword } = newUser;
-      
+
       // Remove setUserData call since we don't have UserContext
       demoLogin(userWithoutPassword);
       setSuccess("Account created successfully! Redirecting...");
-      
+
       setTimeout(() => {
         navigate("/");
       }, 1000);
-      
+
     } catch (error) {
       console.error('❌ Signup error:', error);
       setErr("Failed to create account. Please try again.");
@@ -78,9 +78,9 @@ function SignUp() {
     setLoading(true);
     setErr("");
     setSuccess("");
-    
+
     let demoData;
-    
+
     if (userType === 'krishna') {
       demoData = {
         firstName: "Krishna",
@@ -100,13 +100,13 @@ function SignUp() {
       };
     } else {
       demoData = {
-        firstName: "Atharva", 
+        firstName: "Atharva",
         lastName: "Patil Rajput",
         email: `atharva${Date.now()}@demo.com`,
         userName: `atharvapatil${Date.now()}`,
         password: "demo123",
         headline: "Software Engineer & Open Source Contributor",
-        location: "Mumbai, Maharashtra, India", 
+        location: "Mumbai, Maharashtra, India",
         profileImage: null,
         skills: ["Java", "Spring Boot", "AWS", "Docker", "Kubernetes"],
         followersCount: 189,
@@ -116,10 +116,10 @@ function SignUp() {
         lastActive: new Date().toISOString()
       };
     }
-    
+
     // Fill the form with demo data
     setFormData(demoData);
-    
+
     // Auto-submit after a delay
     setTimeout(() => {
       const submitEvent = new Event('submit', { cancelable: true });

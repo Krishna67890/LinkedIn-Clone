@@ -1,7 +1,7 @@
 // components/EditProfile.jsx
 import React, { useState, useRef } from 'react';
 //import { useUserData } from '../context/userContext'; // ✅ Fixed import path
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { GiSplitCross } from "react-icons/gi";
 import { FaCamera, FaSave, FaTimes } from "react-icons/fa";
@@ -9,7 +9,7 @@ import { FaCamera, FaSave, FaTimes } from "react-icons/fa";
 function EditProfile() {
   const { userData, setUserData, setEdit } = useUserData(); // ✅ Fixed - use custom hook
   const { serverUrl } = useAuth();
-  
+
   const [formData, setFormData] = useState({
     firstName: userData?.firstName || "",
     lastName: userData?.lastName || "",
@@ -18,7 +18,7 @@ function EditProfile() {
     company: userData?.company || "",
     skills: userData?.skills?.join(', ') || ""
   });
-  
+
   const [profileImage, setProfileImage] = useState(userData?.profileImage || null);
   const [frontendImage, setFrontendImage] = useState(userData?.profileImage || "");
   const [loading, setLoading] = useState(false);
@@ -39,13 +39,13 @@ function EditProfile() {
         alert('Image size should be less than 5MB');
         return;
       }
-      
+
       // Validate file type
       if (!file.type.startsWith('image/')) {
         alert('Please select an image file');
         return;
       }
-      
+
       setProfileImage(file);
       setFrontendImage(URL.createObjectURL(file));
     }
@@ -70,7 +70,7 @@ function EditProfile() {
       };
 
       setUserData(updatedUser);
-      
+
       // Update localStorage for persistence
       const currentDemoUser = localStorage.getItem('demoUser');
       if (currentDemoUser) {
@@ -81,7 +81,7 @@ function EditProfile() {
 
       alert('Profile updated successfully!');
       setEdit(false);
-      
+
     } catch (error) {
       console.error('❌ Error updating profile:', error);
       alert('Failed to update profile. Please try again.');
@@ -124,7 +124,7 @@ function EditProfile() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              
+
               {/* Camera Button */}
               <button
                 type="button"
@@ -153,7 +153,7 @@ function EditProfile() {
               accept="image/*"
               className="hidden"
             />
-            
+
             <p className="text-sm text-gray-500 mt-2">
               Click the camera icon to change profile photo
             </p>

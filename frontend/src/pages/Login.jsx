@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react';
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useNavigate, Link } from "react-router-dom";
 import { useUserData } from '../context/userContext';// ✅ Import UserContext
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const [show, setShow] = useState(false);
@@ -35,7 +35,7 @@ function Login() {
     },
     {
       firstName: "Atharva",
-      lastName: "Patil Rajput", 
+      lastName: "Patil Rajput",
       email: "atharva@demo.com",
       userName: "atharvapatil",
       password: "demo123",
@@ -55,26 +55,26 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     setErr("");
-    
+
     try {
       console.log('🔄 Attempting login...', { email });
-      
+
       // Demo mode login
       const user = demoUsers.find(u => u.email === email && u.password === password);
       if (user) {
         // Remove password from user object before storing
         const { password: _, ...userWithoutPassword } = user;
-        
+
         demoLogin(userWithoutPassword);
         setUserData(userWithoutPassword);
-        
+
         setTimeout(() => {
           navigate("/");
         }, 500);
       } else {
         setErr("Invalid email or password. Try 'krishna@demo.com' or 'atharva@demo.com' with password 'demo123'");
       }
-      
+
     } catch (error) {
       console.error('❌ Login error:', error);
       setErr("Login failed. Please try the demo buttons below.");
@@ -87,18 +87,18 @@ function Login() {
   const quickLogin = (userIndex) => {
     setLoading(true);
     setErr("");
-    
+
     const user = demoUsers[userIndex];
     setEmail(user.email);
     setPassword(user.password);
-    
+
     // Auto-login after a short delay
     setTimeout(() => {
       const { password: _, ...userWithoutPassword } = user;
-      
+
       demoLogin(userWithoutPassword);
       setUserData(userWithoutPassword);
-      
+
       setTimeout(() => {
         navigate("/");
       }, 500);
@@ -215,8 +215,8 @@ function Login() {
               {/* Demo Credentials Hint */}
               <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
                 <p className="text-xs text-gray-600 text-center">
-                  <strong>Demo Credentials:</strong><br/>
-                  krishna@demo.com / atharva@demo.com<br/>
+                  <strong>Demo Credentials:</strong><br />
+                  krishna@demo.com / atharva@demo.com<br />
                   Password: demo123
                 </p>
               </div>

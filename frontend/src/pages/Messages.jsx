@@ -1,7 +1,7 @@
 // src/pages/Messages.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/authContext';
+import { useAuth } from '../context/AuthContext';
 // import { UserContext } from '../context/userContext';
 import { FaSearch, FaPaperPlane, FaReply, FaEllipsisV, FaTimes, FaPaperclip, FaSmile, FaCheck, FaCheckDouble } from 'react-icons/fa';
 import { IoIosSend } from "react-icons/io";
@@ -112,7 +112,7 @@ function Messages() {
   );
 
   // Get active conversation
-  const activeConversation = activeChat ? 
+  const activeConversation = activeChat ?
     conversations.find(conv => conv.id === activeChat) : null;
 
   // Scroll to bottom of messages
@@ -139,13 +139,13 @@ function Messages() {
     };
 
     // Update conversations with new message
-    setConversations(prev => prev.map(conv => 
-      conv.id === activeChat 
-        ? { 
-            ...conv, 
-            messages: [...conv.messages, newMessage],
-            unread: 0
-          }
+    setConversations(prev => prev.map(conv =>
+      conv.id === activeChat
+        ? {
+          ...conv,
+          messages: [...conv.messages, newMessage],
+          unread: 0
+        }
         : conv
     ));
 
@@ -181,13 +181,13 @@ function Messages() {
       type: 'text'
     };
 
-    setConversations(prev => prev.map(conv => 
-      conv.id === conversationId 
-        ? { 
-            ...conv, 
-            messages: [...conv.messages, replyMessage],
-            unread: conv.id === activeChat ? 0 : conv.unread + 1
-          }
+    setConversations(prev => prev.map(conv =>
+      conv.id === conversationId
+        ? {
+          ...conv,
+          messages: [...conv.messages, replyMessage],
+          unread: conv.id === activeChat ? 0 : conv.unread + 1
+        }
         : conv
     ));
   };
@@ -224,13 +224,13 @@ function Messages() {
       }
     };
 
-    setConversations(prev => prev.map(conv => 
-      conv.id === activeChat 
-        ? { 
-            ...conv, 
-            messages: [...conv.messages, fileMessage],
-            unread: 0
-          }
+    setConversations(prev => prev.map(conv =>
+      conv.id === activeChat
+        ? {
+          ...conv,
+          messages: [...conv.messages, fileMessage],
+          unread: 0
+        }
         : conv
     ));
 
@@ -240,9 +240,9 @@ function Messages() {
 
   // Format time
   const formatTime = (timestamp) => {
-    return new Date(timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -265,10 +265,10 @@ function Messages() {
   // Check if messages are from the same sender and same day
   const shouldGroupMessages = (currentMsg, previousMsg) => {
     if (!previousMsg) return false;
-    
+
     const currentDate = new Date(currentMsg.timestamp).toDateString();
     const previousDate = new Date(previousMsg.timestamp).toDateString();
-    
+
     return currentMsg.senderId === previousMsg.senderId && currentDate === previousDate;
   };
 
@@ -283,10 +283,10 @@ function Messages() {
   return (
     <div className="min-h-screen bg-[#f3f2f0] pt-20">
       <div className="max-w-7xl mx-auto h-[calc(100vh-80px)] flex">
-        
+
         {/* Conversations List */}
         <div className="w-1/3 bg-white border-r border-gray-200 flex flex-col">
-          
+
           {/* Header */}
           <div className="p-4 border-b border-gray-200">
             <div className="flex items-center justify-between mb-4">
@@ -295,7 +295,7 @@ function Messages() {
                 <FaEllipsisV className="w-5 h-5" />
               </button>
             </div>
-            
+
             {/* Search */}
             <div className="relative">
               <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -314,9 +314,8 @@ function Messages() {
             {filteredConversations.map(conversation => (
               <div
                 key={conversation.id}
-                className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                  activeChat === conversation.id ? 'bg-blue-50 border-blue-200' : ''
-                }`}
+                className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${activeChat === conversation.id ? 'bg-blue-50 border-blue-200' : ''
+                  }`}
                 onClick={() => setActiveChat(conversation.id)}
               >
                 <div className="flex items-start space-x-3">
@@ -331,7 +330,7 @@ function Messages() {
                       <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                     )}
                   </div>
-                  
+
                   {/* Conversation info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
@@ -399,7 +398,7 @@ function Messages() {
                   const isCurrentUser = message.senderId === 'current_user';
                   const previousMessage = activeConversation.messages[index - 1];
                   const showHeader = !shouldGroupMessages(message, previousMessage);
-                  
+
                   return (
                     <div key={message.id}>
                       {/* Date separator */}
@@ -414,7 +413,7 @@ function Messages() {
                       {/* Message */}
                       <div className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-xs lg:max-w-md ${isCurrentUser ? 'order-2' : 'order-1'}`}>
-                          
+
                           {/* Message header (avatar and name) */}
                           {showHeader && !isCurrentUser && (
                             <div className="flex items-center space-x-2 mb-1">
@@ -441,11 +440,10 @@ function Messages() {
 
                           {/* Message bubble */}
                           <div
-                            className={`relative p-3 rounded-2xl ${
-                              isCurrentUser
+                            className={`relative p-3 rounded-2xl ${isCurrentUser
                                 ? 'bg-blue-500 text-white rounded-br-none'
                                 : 'bg-white text-gray-900 rounded-bl-none border border-gray-200'
-                            }`}
+                              }`}
                           >
                             {/* Reply button */}
                             {!isCurrentUser && (
@@ -458,11 +456,10 @@ function Messages() {
                             )}
 
                             <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                            
+
                             {/* Message footer */}
-                            <div className={`flex items-center justify-end space-x-1 mt-1 text-xs ${
-                              isCurrentUser ? 'text-blue-200' : 'text-gray-500'
-                            }`}>
+                            <div className={`flex items-center justify-end space-x-1 mt-1 text-xs ${isCurrentUser ? 'text-blue-200' : 'text-gray-500'
+                              }`}>
                               <span>{formatTime(message.timestamp)}</span>
                               {isCurrentUser && (
                                 message.read ? (
@@ -509,7 +506,7 @@ function Messages() {
                   >
                     <FaPaperclip className="w-5 h-5" />
                   </button>
-                  
+
                   {/* File input (hidden) */}
                   <input
                     type="file"
@@ -539,11 +536,10 @@ function Messages() {
                     <button
                       onClick={sendMessage}
                       disabled={!messageInput.trim()}
-                      className={`p-2 rounded-full ${
-                        messageInput.trim()
+                      className={`p-2 rounded-full ${messageInput.trim()
                           ? 'bg-blue-500 hover:bg-blue-600 text-white'
                           : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      } transition-colors`}
+                        } transition-colors`}
                     >
                       <IoIosSend className="w-5 h-5" />
                     </button>
@@ -562,8 +558,8 @@ function Messages() {
                 <p className="text-gray-600 mb-6">
                   Select a conversation to start messaging
                 </p>
-                <Link 
-                  to="/" 
+                <Link
+                  to="/"
                   className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full font-medium transition-colors"
                 >
                   Back to Home

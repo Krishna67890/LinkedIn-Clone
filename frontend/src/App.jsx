@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/authContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
@@ -23,42 +23,42 @@ function AppContent() {
       navigate('/');
     }
   }, [location, navigate]);
-  
+
   return (
     <div className="App">
       {authData.isAuthenticated && <Nav />}
       <Routes>
-        <Route 
-          path="/login" 
-          element={!authData.isAuthenticated ? <Login /> : <Navigate to="/" />} 
+        <Route
+          path="/login"
+          element={!authData.isAuthenticated ? <Login /> : <Navigate to="/" />}
         />
-        <Route 
-          path="/signup" 
-          element={!authData.isAuthenticated ? <SignUp /> : <Navigate to="/" />} 
+        <Route
+          path="/signup"
+          element={!authData.isAuthenticated ? <SignUp /> : <Navigate to="/" />}
         />
-        <Route 
-          path="/" 
-          element={authData.isAuthenticated ? <Home /> : <Navigate to="/login" />} 
+        <Route
+          path="/"
+          element={authData.isAuthenticated ? <Home /> : <Navigate to="/login" />}
         />
-        <Route 
-          path="/profile" 
-          element={authData.isAuthenticated ? <Profile /> : <Navigate to="/login" />} 
+        <Route
+          path="/profile"
+          element={authData.isAuthenticated ? <Profile /> : <Navigate to="/login" />}
         />
-        <Route 
-          path="/notifications" 
-          element={authData.isAuthenticated ? <Notifications /> : <Navigate to="/login" />} 
+        <Route
+          path="/notifications"
+          element={authData.isAuthenticated ? <Notifications /> : <Navigate to="/login" />}
         />
-        <Route 
-          path="/network" 
-          element={authData.isAuthenticated ? <Network /> : <Navigate to="/login" />} 
+        <Route
+          path="/network"
+          element={authData.isAuthenticated ? <Network /> : <Navigate to="/login" />}
         />
-        <Route 
-          path="/jobs" 
-          element={authData.isAuthenticated ? <Jobs /> : <Navigate to="/login" />} 
+        <Route
+          path="/jobs"
+          element={authData.isAuthenticated ? <Jobs /> : <Navigate to="/login" />}
         />
-        <Route 
-          path="/messages" 
-          element={authData.isAuthenticated ? <Messages /> : <Navigate to="/login" />} 
+        <Route
+          path="/messages"
+          element={authData.isAuthenticated ? <Messages /> : <Navigate to="/login" />}
         />
         {/* Catch-all route for 404 */}
         <Route path="*" element={<Navigate to="/" />} />
