@@ -1,11 +1,21 @@
-import React from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
-export const UserContext = React.createContext();
+const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  return children;
+  const [userData, setUserData] = useState(null);
+  
+  return (
+    <UserContext.Provider value={{ userData, setUserData }}>
+      {children}
+    </UserContext.Provider>
+  );
 };
 
-export const useUser = () => {
-  return { userData: null, setUserData: () => {} };
-};
+// Export ALL possible hook names
+export const useUser = () => useContext(UserContext);
+export const useUserData = () => useContext(UserContext);
+export const useUserContext = () => useContext(UserContext);
+
+// Default export
+export default UserContext;
