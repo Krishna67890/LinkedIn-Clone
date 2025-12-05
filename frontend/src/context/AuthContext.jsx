@@ -155,11 +155,7 @@ export function useAuth() { // ✅ Named export
   return context;
 }
 
-<<<<<<< HEAD:frontend/src/context/AuthContext.jsx
-export default AuthProvider; // ✅ Default export
-=======
 // Export demo users data
 export { demoUsers };
 
 export default AuthProvider; // ✅ Default export
->>>>>>> 4df3f66 (Updated LinkedIn clone: added News page and modified components):frontend/src/context/authContext.jsx
