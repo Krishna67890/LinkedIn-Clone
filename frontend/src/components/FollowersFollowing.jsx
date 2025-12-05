@@ -2,9 +2,8 @@ import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { GiSplitCross } from "react-icons/gi";
 import { UserContext } from '../context/UserContext';
-// Avatar fallback - using a data URI for a simple placeholder avatar
-const dp = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9IiMzYTc5YjciLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjQwIiByPSIyMCIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0zMCA3MEwyNSA5MGg1MEw3MCA3MHoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=';
-import { AuthContext } from '/src/context/AuthContext.jsx';
+import dp from "../assets/dp.webp";
+import { AuthContext } from '../context/AuthContext.jsx';
 
 function FollowersFollowing() {
   const { edit, setEdit, userData } = useContext(UserContext);
@@ -364,4 +363,4 @@ function FollowersFollowing() {
   );
 }
 
-export default FollowersFollowing; 
+export default FollowersFollowing;
