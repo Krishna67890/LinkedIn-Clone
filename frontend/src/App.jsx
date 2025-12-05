@@ -9,6 +9,7 @@ import Notifications from './pages/Notifications';
 import Network from './pages/MyNetwork';
 import Jobs from './pages/Jobs';
 import Messages from './pages/Messages';
+import News from './pages/News';
 import Nav from './components/Nav';
 
 function AppContent() {
@@ -18,7 +19,7 @@ function AppContent() {
 
   useEffect(() => {
     // Handle 404 redirects for client-side routing
-    const validRoutes = ['/', '/login', '/signup', '/profile', '/notifications', '/network', '/jobs', '/messages'];
+    const validRoutes = ['/', '/login', '/signup', '/profile', '/notifications', '/network', '/jobs', '/messages', '/news'];
     if (!validRoutes.includes(location.pathname)) {
       navigate('/');
     }
@@ -59,6 +60,10 @@ function AppContent() {
         <Route
           path="/messages"
           element={authData.isAuthenticated ? <Messages /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/news"
+          element={authData.isAuthenticated ? <News /> : <Navigate to="/login" />}
         />
         {/* Catch-all route for 404 */}
         <Route path="*" element={<Navigate to="/" />} />

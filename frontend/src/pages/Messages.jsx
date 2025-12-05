@@ -1,110 +1,149 @@
 // src/pages/Messages.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-// import { UserContext } from '../context/userContext';
+import { useUserData } from '../context/UserContext';
+import { demoUsers } from '../context/AuthContext';
 import { FaSearch, FaPaperPlane, FaReply, FaEllipsisV, FaTimes, FaPaperclip, FaSmile, FaCheck, FaCheckDouble } from 'react-icons/fa';
 import { IoIosSend } from "react-icons/io";
 
 function Messages() {
   const { authData } = useAuth();
+  const { userData } = useUserData();
   const [activeChat, setActiveChat] = useState(null);
   const [messageInput, setMessageInput] = useState('');
   const [replyTo, setReplyTo] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchParams] = useSearchParams();
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Mock conversations data with peer IDs
-  const [conversations, setConversations] = useState([
-    {
-      id: 'conv_1',
-      peer: {
-        id: 'peer_001',
-        name: 'Sarah Wilson',
-        title: 'Product Manager at Microsoft',
-        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80',
-        online: true
-      },
-      messages: [
-        {
-          id: 'msg_1_1',
-          senderId: 'peer_001',
-          text: 'Hey! How are you doing?',
-          timestamp: new Date(Date.now() - 3600000),
-          read: true,
-          type: 'text'
-        },
-        {
-          id: 'msg_1_2',
-          senderId: 'current_user',
-          text: "I'm doing great! Just finished the project we discussed.",
-          timestamp: new Date(Date.now() - 1800000),
-          read: true,
-          type: 'text'
-        },
-        {
-          id: 'msg_1_3',
-          senderId: 'peer_001',
-          text: 'That\'s awesome! Can you share the details?',
-          timestamp: new Date(Date.now() - 1200000),
-          read: true,
-          type: 'text'
+  // Initialize conversations based on logged-in user
+  const [conversations, setConversations] = useState([]);
+
+  // Initialize conversations when authData changes
+  useEffect(() => {
+    if (authData.user?.id) {
+      // Try to load conversations from localStorage first
+      const savedConversations = localStorage.getItem(`conversations_${authData.user.id}`);
+      if (savedConversations) {
+        try {
+          const parsedConversations = JSON.parse(savedConversations);
+          setConversations(parsedConversations);
+          return;
+        } catch (error) {
+          console.error('Failed to parse saved conversations:', error);
         }
-      ],
-      unread: 0
-    },
-    {
-      id: 'conv_2',
-      peer: {
-        id: 'peer_002',
-        name: 'Mike Chen',
-        title: 'Senior Data Scientist',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80',
-        online: false
-      },
-      messages: [
-        {
-          id: 'msg_2_1',
-          senderId: 'current_user',
-          text: 'Hi Mike, about our meeting tomorrow...',
-          timestamp: new Date(Date.now() - 86400000),
-          read: true,
-          type: 'text'
-        },
-        {
-          id: 'msg_2_2',
-          senderId: 'peer_002',
-          text: 'Looking forward to it! 2 PM works perfectly.',
-          timestamp: new Date(Date.now() - 43200000),
-          read: true,
-          type: 'text'
+      }
+      
+      // If no saved conversations, create new ones
+      // Get all demo users except the current user
+      const otherUsers = demoUsers.filter(user => user.id !== authData.user.id);
+      
+      // Create conversations with each other user
+      const userConversations = otherUsers.map((otherUser, index) => {
+        // Generate conversation ID based on user IDs (sorted alphabetically)
+        const userIds = [authData.user.id, otherUser.id].sort();
+        const convId = `conv_${userIds[0]}_${userIds[1]}`;
+        
+        // Create sample messages for demo purposes
+        const sampleMessages = [
+          {
+            id: `msg_sample_${index}_1`,
+            senderId: otherUser.id,
+            text: `Hi ${authData.user.firstName}, I saw your recent post. Great insights!`,
+            timestamp: new Date(Date.now() - 86400000 * (index + 1)), // 1-4 days ago
+            read: true,
+            type: 'text'
+          },
+          {
+            id: `msg_sample_${index}_2`,
+            senderId: authData.user.id,
+            text: `Thanks ${otherUser.firstName}! I'm glad you found it helpful.`,
+            timestamp: new Date(Date.now() - 86400000 * index), // 0-3 days ago
+            read: true,
+            type: 'text'
+          }
+        ];
+        
+        // Add an unread message for the last conversation
+        if (index === otherUsers.length - 1) {
+          sampleMessages.push({
+            id: `msg_sample_${index}_3`,
+            senderId: otherUser.id,
+            text: `Would you like to collaborate on a project together?`,
+            timestamp: new Date(),
+            read: false,
+            type: 'text'
+          });
         }
-      ],
-      unread: 0
-    },
-    {
-      id: 'conv_3',
-      peer: {
-        id: 'peer_003',
-        name: 'Alex Johnson',
-        title: 'Frontend Developer',
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80',
-        online: true
-      },
-      messages: [
-        {
-          id: 'msg_3_1',
-          senderId: 'peer_003',
-          text: 'Thanks for connecting! Loved your recent post about React patterns.',
-          timestamp: new Date(Date.now() - 7200000),
-          read: false,
-          type: 'text'
-        }
-      ],
-      unread: 1
+        
+        return {
+          id: convId,
+          peer: {
+            id: otherUser.id,
+            name: `${otherUser.firstName} ${otherUser.lastName}`,
+            title: otherUser.headline,
+            avatar: otherUser.profileImage || '',
+            online: Math.random() > 0.5 // Random online status for demo
+          },
+          messages: sampleMessages,
+          unread: index === otherUsers.length - 1 ? 1 : 0 // Last conversation has 1 unread message
+        };
+      });
+      
+      setConversations(userConversations);
     }
-  ]);
+  }, [authData.user]);
+
+  // Set active chat when a user ID is provided in query params
+  useEffect(() => {
+    const userId = searchParams.get('userId');
+    if (userId && conversations.length > 0) {
+      const conversation = conversations.find(conv => conv.peer.id === userId);
+      if (conversation) {
+        setActiveChat(conversation.id);
+        // Scroll to the conversation
+        setTimeout(() => {
+          const element = document.getElementById(`conversation-${conversation.id}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      }
+    }
+  }, [searchParams, conversations]);
+
+  // Fallback: if user ID is provided but conversations weren't ready, try again when they load
+  useEffect(() => {
+    if (conversations.length > 0) {
+      const userId = searchParams.get('userId');
+      if (userId) {
+        const conversation = conversations.find(conv => conv.peer.id === userId);
+        if (conversation && !activeChat) {
+          setActiveChat(conversation.id);
+          // Scroll to the conversation
+          setTimeout(() => {
+            const element = document.getElementById(`conversation-${conversation.id}`);
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }, 100);
+        }
+      }
+    }
+  }, [conversations, activeChat, searchParams]);
+
+  // Save conversations to localStorage whenever they change
+  useEffect(() => {
+    if (authData.user?.id && conversations.length > 0) {
+      try {
+        localStorage.setItem(`conversations_${authData.user.id}`, JSON.stringify(conversations));
+      } catch (error) {
+        console.error('Failed to save conversations to localStorage:', error);
+      }
+    }
+  }, [conversations, authData.user?.id]);
 
   // Filtered conversations based on search
   const filteredConversations = conversations.filter(conv =>
@@ -130,7 +169,7 @@ function Messages() {
 
     const newMessage = {
       id: `msg_${Date.now()}`,
-      senderId: 'current_user',
+      senderId: authData.user?.id || 'current_user',
       text: messageInput,
       timestamp: new Date(),
       read: false,
@@ -149,47 +188,30 @@ function Messages() {
         : conv
     ));
 
+    // Create notification for the recipient
+    const activeConv = conversations.find(conv => conv.id === activeChat);
+    if (activeConv) {
+      // In a real app, we would send this to the recipient
+      // For demo, we'll just log it
+      console.log('Message sent to:', activeConv.peer.name);
+      
+      // Show success message
+      alert(`Message sent to ${activeConv.peer.name}!`);
+    }
+
     setMessageInput('');
     setReplyTo(null);
 
-    // Simulate reply after 1-3 seconds
-    setTimeout(() => {
-      simulateReply(activeChat);
-    }, 1000 + Math.random() * 2000);
+    // In a real app, we would send this message to a backend service
+    // For demo purposes, we'll just show a confirmation
+    console.log('Message sent:', newMessage);
   };
 
   // Simulate a reply from the peer
   const simulateReply = (conversationId) => {
-    const replies = [
-      "That's interesting! Tell me more.",
-      "I completely agree with you.",
-      "Thanks for sharing that information.",
-      "Let's discuss this further in our next meeting.",
-      "I have some thoughts on that topic.",
-      "Could you elaborate on that point?",
-      "That reminds me of something similar I experienced."
-    ];
-
-    const randomReply = replies[Math.floor(Math.random() * replies.length)];
-
-    const replyMessage = {
-      id: `msg_${Date.now()}_reply`,
-      senderId: conversations.find(conv => conv.id === conversationId)?.peer.id,
-      text: randomReply,
-      timestamp: new Date(),
-      read: false,
-      type: 'text'
-    };
-
-    setConversations(prev => prev.map(conv =>
-      conv.id === conversationId
-        ? {
-          ...conv,
-          messages: [...conv.messages, replyMessage],
-          unread: conv.id === activeChat ? 0 : conv.unread + 1
-        }
-        : conv
-    ));
+    // For demo purposes, we'll disable simulated replies to avoid confusion
+    // In a real app, messages would come from other users through a backend service
+    console.log('Simulated reply skipped for demo clarity');
   };
 
   // Start a reply to a message
@@ -314,6 +336,7 @@ function Messages() {
             {filteredConversations.map(conversation => (
               <div
                 key={conversation.id}
+                id={`conversation-${conversation.id}`}
                 className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${activeChat === conversation.id ? 'bg-blue-50 border-blue-200' : ''
                   }`}
                 onClick={() => setActiveChat(conversation.id)}
@@ -343,6 +366,9 @@ function Messages() {
                     </div>
                     <p className="text-sm text-gray-600 truncate mb-1">
                       {conversation.peer.title}
+                    </p>
+                    <p className="text-xs text-gray-400 truncate">
+                      ID: {conversation.peer.id}
                     </p>
                     <p className="text-sm text-gray-500 truncate">
                       {conversation.messages[conversation.messages.length - 1]?.text}
@@ -384,6 +410,9 @@ function Messages() {
                     </h2>
                     <p className="text-sm text-gray-500">
                       {activeConversation.peer.online ? 'Online' : 'Last seen recently'}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      ID: {activeConversation.peer.id}
                     </p>
                   </div>
                 </div>

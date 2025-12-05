@@ -31,7 +31,9 @@ const mockJobs = [
     featured: true,
     applications: 24,
     views: 156,
-    bookmarked: false
+    bookmarked: false,
+    easyApply: true,
+    urgent: false
   },
   {
     id: 2,
@@ -48,7 +50,9 @@ const mockJobs = [
     featured: false,
     applications: 18,
     views: 89,
-    bookmarked: true
+    bookmarked: true,
+    easyApply: false,
+    urgent: false
   },
   {
     id: 3,
@@ -65,7 +69,9 @@ const mockJobs = [
     featured: true,
     applications: 12,
     views: 67,
-    bookmarked: false
+    bookmarked: false,
+    easyApply: true,
+    urgent: true
   },
   {
     id: 4,
@@ -82,7 +88,9 @@ const mockJobs = [
     featured: false,
     applications: 8,
     views: 45,
-    bookmarked: false
+    bookmarked: false,
+    easyApply: true,
+    urgent: false
   },
   {
     id: 5,
@@ -99,7 +107,9 @@ const mockJobs = [
     featured: true,
     applications: 32,
     views: 198,
-    bookmarked: false
+    bookmarked: false,
+    easyApply: false,
+    urgent: true
   },
   {
     id: 6,
@@ -116,7 +126,9 @@ const mockJobs = [
     featured: false,
     applications: 15,
     views: 78,
-    bookmarked: false
+    bookmarked: false,
+    easyApply: true,
+    urgent: false
   }
 ];
 
@@ -246,6 +258,12 @@ const Jobs = () => {
               Featured
             </span>
           )}
+          {job.urgent && (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+              <FaClock size={12} className="mr-1" />
+              Urgent
+            </span>
+          )}
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
             {job.type}
           </span>
@@ -255,6 +273,11 @@ const Jobs = () => {
           {job.remote && (
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
               Remote
+            </span>
+          )}
+          {job.easyApply && (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+              Easy Apply
             </span>
           )}
         </div>
@@ -343,6 +366,8 @@ const Jobs = () => {
             <span>{job.type}</span>
             <span>{job.experience}</span>
             {job.remote && <span className="text-green-600">Remote</span>}
+            {job.urgent && <span className="text-red-600 font-bold">Urgent</span>}
+            {job.easyApply && <span className="text-indigo-600">Easy Apply</span>}
           </div>
 
           <div className="flex flex-wrap gap-1 mb-3">

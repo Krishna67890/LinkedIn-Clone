@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react'
 import Nav from '../components/Nav'
-import dp from "../assets/dp.webp"
+// Avatar fallback - using a data URI for a simple placeholder avatar
+const dp = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9IiMzYTc5YjciLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjQwIiByPSIyMCIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0zMCA3MEwyNSA5MGg1MEw3MCA3MHoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=';
 import { CiCirclePlus, CiCamera } from "react-icons/ci";
-// import { useUserData } from '../context/userContext'; // ✅ Use custom hook
-import { FaPencilAlt, FaEllipsisH, FaRegComment, FaRegShareSquare, FaRegBookmark, FaRegSmile } from "react-icons/fa";
+import { useUserData } from '../context/UserContext';
+import { FaPencilAlt, FaEllipsisH, FaRegComment, FaRegShareSquare, FaRegBookmark, FaRegSmile, FaTrash, FaEnvelope } from "react-icons/fa";
 import { MdPhotoLibrary, MdVideoLibrary, MdEvent, MdArticle, MdWork, MdSchool, MdPublic } from "react-icons/md";
 import { HiLocationMarker } from "react-icons/hi";
 import EditProfile from '../components/EditProfile';
@@ -13,8 +14,203 @@ import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import EmojiPicker from 'emoji-picker-react';
 
+// Shared posts data structure for demo users
+const sharedPosts = [
+  // Krishna's posts
+  {
+    id: 'post_krishna_1',
+    userId: 'user_krishna',
+    user: {
+      name: 'Krishna Patil Rajput',
+      title: 'Senior Full Stack Developer & Tech Evangelist at TechSolutions Inc',
+      avatar: dp,
+      company: 'TechSolutions Inc',
+      connectionLevel: '1st'
+    },
+    content: 'Just deployed a new microservice architecture that reduced our API response time by 40%! Excited to share this achievement with the community. #microservices #performance #backend',
+    time: '2h ago',
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+    likes: 45,
+    comments: 12,
+    commentsList: [
+      {
+        id: 'comment_krishna_1_1',
+        user: {
+          name: 'Atharva Patil Rajput',
+          avatar: dp
+        },
+        text: 'Amazing work Krishna! This is exactly what our team needs.',
+        timestamp: new Date(Date.now() - 120 * 60 * 1000)
+      },
+      {
+        id: 'comment_krishna_1_2',
+        user: {
+          name: 'Ankush Khakale',
+          avatar: dp
+        },
+        text: 'Can you share some details about the architecture?',
+        timestamp: new Date(Date.now() - 90 * 60 * 1000)
+      }
+    ],
+    shares: 5,
+    liked: false,
+    saved: false,
+    type: 'update',
+    image: null,
+    hashtags: ['microservices', 'performance', 'backend']
+  },
+  {
+    id: 'post_krishna_2',
+    userId: 'user_krishna',
+    user: {
+      name: 'Krishna Patil Rajput',
+      title: 'Senior Full Stack Developer & Tech Evangelist at TechSolutions Inc',
+      avatar: dp,
+      company: 'TechSolutions Inc',
+      connectionLevel: '1st'
+    },
+    content: 'Working on an exciting new React project with cutting-edge features. The team is doing an amazing job implementing real-time collaboration. #react #webdevelopment #teamwork',
+    time: '1d ago',
+    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
+    likes: 89,
+    comments: 23,
+    commentsList: [
+      {
+        id: 'comment_krishna_2_1',
+        user: {
+          name: 'Mahesh Vispute',
+          avatar: dp
+        },
+        text: 'Looks promising! How is the backend integration going?',
+        timestamp: new Date(Date.now() - 20 * 60 * 60 * 1000)
+      }
+    ],
+    shares: 8,
+    liked: true,
+    saved: true,
+    type: 'project',
+    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1000&q=80',
+    hashtags: ['react', 'webdevelopment', 'teamwork']
+  },
+  // Atharva's posts
+  {
+    id: 'post_atharva_1',
+    userId: 'user_atharva',
+    user: {
+      name: 'Atharva Patil Rajput',
+      title: 'Software Engineer & AI/ML Specialist at AI Innovations Ltd',
+      avatar: dp,
+    },
+    content: 'Published a new research paper on neural networks and their applications in natural language processing. Proud of what our research team accomplished! #machinelearning #nlp #research',
+    time: '4h ago',
+    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
+    likes: 156,
+    comments: 34,
+    commentsList: [
+      {
+        id: 'comment_atharva_1_1',
+        user: {
+          name: 'Krishna Patil Rajput',
+          avatar: dp
+        },
+        text: 'Congratulations on the publication! This is groundbreaking work.',
+        timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000)
+      },
+      {
+        id: 'comment_atharva_1_2',
+        user: {
+          name: 'Ankush Khakale',
+          avatar: dp
+        },
+        text: 'Very interesting approach to NLP. Would love to collaborate on future projects!',
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000)
+      }
+    ],
+    shares: 12,
+    liked: false,
+    saved: false,
+    type: 'achievement',
+    image: null,
+    hashtags: ['machinelearning', 'nlp', 'research']
+  },
+  // Ankush's posts
+  {
+    id: 'post_ankush_1',
+    userId: 'user_ankush',
+    user: {
+      name: 'Ankush Khakale',
+      title: 'Frontend Developer & UI/UX Designer at DesignTech Systems',
+      avatar: dp,
+    },
+    content: 'Designed a new user interface for our flagship product that increased user engagement by 35%. The design process was challenging but rewarding. #uiux #design #userexperience',
+    time: '6h ago',
+    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
+    likes: 78,
+    comments: 19,
+    commentsList: [
+      {
+        id: 'comment_ankush_1_1',
+        user: {
+          name: 'Mahesh Vispute',
+          avatar: dp
+        },
+        text: 'Beautiful design! How did you handle responsive layouts?',
+        timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000)
+      }
+    ],
+    shares: 7,
+    liked: true,
+    saved: false,
+    type: 'design',
+    image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?auto=format&fit=crop&w=1000&q=80',
+    hashtags: ['uiux', 'design', 'userexperience']
+  },
+  // Mahesh's posts
+  {
+    id: 'post_mahesh_1',
+    userId: 'user_mahesh',
+    user: {
+      name: 'Mahesh Vispute',
+      title: 'Backend Engineer & Database Specialist at DataSystems Pvt Ltd',
+      avatar: dp,
+    },
+    content: 'Optimized our database queries and implemented caching strategies that improved system performance by 60%. Database optimization is truly an art! #database #optimization #backend',
+    time: '8h ago',
+    timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000),
+    likes: 112,
+    comments: 28,
+    commentsList: [
+      {
+        id: 'comment_mahesh_1_1',
+        user: {
+          name: 'Krishna Patil Rajput',
+          avatar: dp
+        },
+        text: 'Impressive results! Can you share the optimization techniques you used?',
+        timestamp: new Date(Date.now() - 7 * 60 * 60 * 1000)
+      },
+      {
+        id: 'comment_mahesh_1_2',
+        user: {
+          name: 'Atharva Patil Rajput',
+          avatar: dp
+        },
+        text: 'This is exactly what we need for our ML pipeline. Great work!',
+        timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000)
+      }
+    ],
+    shares: 9,
+    liked: false,
+    saved: true,
+    type: 'technical',
+    image: null,
+    hashtags: ['database', 'optimization', 'backend']
+  }
+];
+
 function Home() {
-  let { userData, setUserData, edit, setEdit } = useUserData()
+  let { userData, setUserData } = useUserData()
+  let [edit, setEdit] = useState(false)
 
   const { authData, demoLogout } = useAuth()
 
@@ -35,6 +231,8 @@ function Home() {
   const [trendingNews, setTrendingNews] = useState([]);
   const [userPosts, setUserPosts] = useState([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+  const [commentInputs, setCommentInputs] = useState({}); // Track comment inputs for each post
+  const [showComments, setShowComments] = useState({}); // Track which posts have comments shown
 
   // Check authentication - use authData from useAuth hook
   useEffect(() => {
@@ -53,6 +251,94 @@ function Home() {
       loadTrendingNews();
     }
   }, [authData.isAuthenticated]);
+
+  // Update trending news every 2 seconds
+  useEffect(() => {
+    const newsInterval = setInterval(() => {
+      loadTrendingNews();
+    }, 2000);
+    
+    // Cleanup interval on component unmount
+    return () => clearInterval(newsInterval);
+  }, []);
+
+  // Load posts from localStorage on component mount
+  useEffect(() => {
+    const savedPosts = localStorage.getItem('sharedPosts');
+    if (savedPosts) {
+      try {
+        const parsedPosts = JSON.parse(savedPosts);
+        // Merge saved posts with hardcoded posts to preserve demo data
+        // But prioritize saved posts (user-generated content) over hardcoded ones
+        const mergedPosts = [...sharedPosts]; // Start with hardcoded posts
+        
+        // Update hardcoded posts with any saved data
+        parsedPosts.forEach(savedPost => {
+          const existingIndex = mergedPosts.findIndex(post => post.id === savedPost.id);
+          if (existingIndex !== -1) {
+            // Update existing post with saved data
+            mergedPosts[existingIndex] = savedPost;
+          } else {
+            // Add new post if it doesn't exist
+            mergedPosts.push(savedPost);
+          }
+        });
+        
+        // Update the sharedPosts array
+        sharedPosts.length = 0;
+        sharedPosts.push(...mergedPosts);
+        // Update state
+        setPosts(mergedPosts);
+      } catch (error) {
+        console.error('Failed to parse saved posts:', error);
+        // Fallback to hardcoded posts
+        setPosts(sharedPosts);
+      }
+    } else {
+      // No saved posts, use hardcoded posts
+      setPosts(sharedPosts);
+    }
+  }, []);
+
+  // Save posts to localStorage whenever they change
+  useEffect(() => {
+    // Only save user-created posts (not the hardcoded demo posts)
+    const userCreatedPosts = posts.filter(post => 
+      ![
+        'post_krishna_1', 'post_krishna_2', 'post_atharva_1', 'post_mahesh_1', 'post_ankush_1'
+      ].includes(post.id)
+    );
+    
+    if (userCreatedPosts.length > 0) {
+      try {
+        localStorage.setItem('sharedPosts', JSON.stringify(userCreatedPosts));
+      } catch (error) {
+        console.error('Failed to save posts to localStorage:', error);
+      }
+    }
+    // Note: We don't remove the item from localStorage when there are no user-created posts
+    // This ensures that if all user posts are deleted, the empty state persists across reloads
+  }, [posts]);
+
+  // Function to save shared posts to localStorage
+  const saveSharedPostsToLocalStorage = () => {
+    try {
+      // Get user-created posts (excluding hardcoded demo posts)
+      const userCreatedPosts = sharedPosts.filter(post => 
+        ![
+          'post_krishna_1', 'post_krishna_2', 'post_atharva_1', 'post_mahesh_1', 'post_ankush_1'
+        ].includes(post.id)
+      );
+      
+      if (userCreatedPosts.length > 0) {
+        localStorage.setItem('sharedPosts', JSON.stringify(userCreatedPosts));
+      }
+      // Note: We don't remove the item from localStorage when there are no user-created posts
+      // This ensures that if all user posts are deleted, the empty state persists across reloads
+    } catch (error) {
+      console.error('Failed to save shared posts to localStorage:', error);
+    }
+  };
 
   const loadUserPosts = async () => {
     try {
@@ -115,73 +401,8 @@ function Home() {
   };
 
   const loadInitialData = () => {
-    // Sample posts data
-    const samplePosts = [
-      {
-        id: 1,
-        user: {
-          name: "John Doe",
-          title: "Software Engineer at Google",
-          avatar: dp,
-          company: "Google",
-          connectionLevel: "2nd"
-        },
-        content: "Just launched an amazing new feature! So proud of my team for making this happen. #innovation #tech",
-        time: "2h ago",
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-        likes: 45,
-        comments: 12,
-        shares: 5,
-        liked: false,
-        saved: false,
-        type: "update",
-        image: null,
-        hashtags: ["innovation", "tech", "launch"]
-      },
-      {
-        id: 2,
-        user: {
-          name: "Sarah Wilson",
-          title: "Product Manager at Microsoft",
-          avatar: dp,
-          company: "Microsoft",
-          connectionLevel: "1st"
-        },
-        content: "Excited to announce our new product line! Can't wait to see how it helps our customers achieve their goals. Looking forward to the impact this will make in the industry.",
-        time: "4h ago",
-        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-        likes: 89,
-        comments: 23,
-        shares: 8,
-        liked: true,
-        saved: true,
-        type: "announcement",
-        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
-        hashtags: ["productlaunch", "innovation", "customersuccess"]
-      },
-      {
-        id: 3,
-        user: {
-          name: "Mike Chen",
-          title: "Senior Data Scientist at Amazon",
-          avatar: dp,
-          company: "Amazon",
-          connectionLevel: "3rd"
-        },
-        content: "Just published a new research paper on machine learning applications in healthcare. Grateful for my collaborators and the opportunity to contribute to this important field.",
-        time: "1d ago",
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-        likes: 156,
-        comments: 34,
-        shares: 12,
-        liked: false,
-        saved: false,
-        type: "achievement",
-        image: null,
-        hashtags: ["machinelearning", "healthcare", "research"]
-      }
-    ];
-    setPosts(samplePosts);
+    // Load posts from all demo users
+    setPosts(sharedPosts);
   };
 
   const loadSuggestedConnections = () => {
@@ -215,29 +436,59 @@ function Home() {
   };
 
   const loadTrendingNews = () => {
-    const news = [
-      {
-        id: 1,
-        title: "Remote work trends in 2024",
-        description: "How companies are adapting to hybrid models",
-        time: "1h ago",
-        readers: "12,345"
-      },
-      {
-        id: 2,
-        title: "AI transforming industries",
-        description: "Latest developments in artificial intelligence",
-        time: "3h ago",
-        readers: "8,432"
-      },
-      {
-        id: 3,
-        title: "Sustainable business practices",
-        description: "Companies leading in environmental initiatives",
-        time: "5h ago",
-        readers: "6,789"
-      }
+    // Generate random news
+    const newsTitles = [
+      "Remote work trends in 2024",
+      "AI transforming industries",
+      "Sustainable business practices",
+      "Blockchain adoption accelerating",
+      "Cybersecurity threats on the rise",
+      "Quantum computing breakthrough",
+      "Green energy investments surge",
+      "Digital nomad lifestyle growing",
+      "5G networks expanding globally",
+      "Cryptocurrency market volatility",
+      "E-commerce sales hit record highs",
+      "Cloud computing cost optimization",
+      "Machine learning in healthcare",
+      "Remote collaboration tools evolve",
+      "Data privacy regulations tighten"
     ];
+    
+    const newsDescriptions = [
+      "How companies are adapting to hybrid models",
+      "Latest developments in artificial intelligence",
+      "Companies leading in environmental initiatives",
+      "New applications in finance and supply chain",
+      "Protecting digital assets in modern era",
+      "Potential to revolutionize computing power",
+      "Renewable sources driving economic growth",
+      "Work-life balance in the digital age",
+      "Faster connectivity enabling new technologies",
+      "Market fluctuations impact investor strategies",
+      "Online shopping continues exponential growth",
+      "Efficient resource management in cloud",
+      "Diagnostic tools improving patient outcomes",
+      "Virtual meetings become more immersive",
+      "Compliance challenges for global businesses"
+    ];
+    
+    // Generate 3 random news items
+    const news = [];
+    for (let i = 0; i < 3; i++) {
+      const randomIndex = Math.floor(Math.random() * newsTitles.length);
+      const randomTime = Math.floor(Math.random() * 24) + 1;
+      const randomReaders = Math.floor(Math.random() * 50000) + 1000;
+      
+      news.push({
+        id: Date.now() + i, // Unique ID
+        title: newsTitles[randomIndex],
+        description: newsDescriptions[randomIndex],
+        time: `${randomTime}h ago`,
+        readers: randomReaders.toLocaleString()
+      });
+    }
+    
     setTrendingNews(news);
   };
 
@@ -257,7 +508,13 @@ function Home() {
       }
 
       setBackendImage(file)
-      setFrontendImage(URL.createObjectURL(file))
+      
+      // Convert file to data URL for persistence
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setFrontendImage(event.target.result);
+      };
+      reader.readAsDataURL(file)
     }
   }
 
@@ -276,12 +533,13 @@ function Home() {
     try {
       // Create post locally without API call
       const newPost = {
-        id: Date.now(), // Use timestamp as ID
+        id: `post_${authData.user?.id || 'user'}_${Date.now()}`, // Unique ID with user prefix
+        userId: authData.user?.id || 'current_user',
         user: {
-          name: `${userData?.firstName} ${userData?.lastName}`,
-          title: userData?.headline || "Professional",
-          avatar: userData?.profileImage || dp,
-          company: userData?.company || "",
+          name: `${authData.user?.firstName || userData?.firstName} ${authData.user?.lastName || userData?.lastName}`,
+          title: authData.user?.headline || userData?.headline || "Professional",
+          avatar: authData.user?.profileImage || userData?.profileImage || dp,
+          company: authData.user?.company || userData?.company || "",
           connectionLevel: "1st"
         },
         content: description,
@@ -298,8 +556,29 @@ function Home() {
         hashtags: description.match(/#\w+/g) || []
       };
 
+      // Add to shared posts so all demo users can see it
+      sharedPosts.unshift(newPost);
+      
+      // Update the posts state to include the new post
+      setPosts(prev => [newPost, ...prev]);
+
       // Add to user posts
       setUserPosts(prev => [newPost, ...prev]);
+
+      // Save to localStorage immediately
+      try {
+        // Get existing saved posts
+        const savedPosts = localStorage.getItem('sharedPosts');
+        const existingPosts = savedPosts ? JSON.parse(savedPosts) : [];
+        
+        // Add new post to existing posts
+        const updatedPosts = [newPost, ...existingPosts];
+        
+        // Save back to localStorage
+        localStorage.setItem('sharedPosts', JSON.stringify(updatedPosts));
+      } catch (error) {
+        console.error('Failed to save post to localStorage:', error);
+      }
 
       // Reset form
       setUploadPost(false);
@@ -310,7 +589,7 @@ function Home() {
       setShowEmojiPicker(false);
 
       // Show success message
-      alert('Post created successfully! (Demo Mode)');
+      alert('Post created successfully! Other demo users will see your post too. (Demo Mode)');
 
     } catch (error) {
       console.error("❌ Error creating post:", error);
@@ -320,8 +599,21 @@ function Home() {
     }
   }
 
+  // Modify the handleLike function to also save to localStorage
   const handleLike = (postId, isUserPost = false) => {
     // Update UI immediately without API call
+    
+    // Update the shared posts data
+    const postIndex = sharedPosts.findIndex(post => post.id === postId);
+    if (postIndex !== -1) {
+      const currentLiked = sharedPosts[postIndex].liked;
+      sharedPosts[postIndex].likes = currentLiked ? sharedPosts[postIndex].likes - 1 : sharedPosts[postIndex].likes + 1;
+      sharedPosts[postIndex].liked = !currentLiked;
+      
+      // Save updated posts to localStorage
+      saveSharedPostsToLocalStorage();
+    }
+    
     if (isUserPost) {
       setUserPosts(posts => posts.map(post =>
         post.id === postId
@@ -343,6 +635,129 @@ function Home() {
           : post
       ));
     }
+  };
+
+  const handleCommentChange = (postId, text) => {
+    setCommentInputs(prev => ({
+      ...prev,
+      [postId]: text
+    }));
+  };
+
+  const handleAddComment = (postId, isUserPost = false) => {
+    const commentText = commentInputs[postId];
+    if (!commentText || commentText.trim() === '') return;
+
+    // Generate a more unique ID using timestamp and a counter
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substr(2, 9);
+    const uniqueCounter = Math.floor(Math.random() * 100000);
+    const newComment = {
+      id: `comment_${postId}_${timestamp}_${randomString}_${uniqueCounter}`,
+      user: {
+        name: `${authData.user?.firstName} ${authData.user?.lastName}`,
+        avatar: authData.user?.profileImage || dp
+      },
+      text: commentText,
+      timestamp: new Date()
+    };
+
+    // Update the shared posts data
+    const postIndex = sharedPosts.findIndex(post => post.id === postId);
+    if (postIndex !== -1) {
+      if (!sharedPosts[postIndex].commentsList) {
+        sharedPosts[postIndex].commentsList = [];
+      }
+      sharedPosts[postIndex].commentsList.push(newComment);
+      sharedPosts[postIndex].comments = sharedPosts[postIndex].commentsList.length;
+      
+      // Save updated posts to localStorage
+      saveSharedPostsToLocalStorage();
+    }
+
+    // Update UI
+    if (isUserPost) {
+      setUserPosts(posts => posts.map(post =>
+        post.id === postId
+          ? {
+            ...post,
+            comments: post.commentsList ? post.commentsList.length + 1 : 1,
+            commentsList: post.commentsList ? [...post.commentsList, newComment] : [newComment]
+          }
+          : post
+      ));
+    } else {
+      setPosts(posts => posts.map(post =>
+        post.id === postId
+          ? {
+            ...post,
+            comments: post.commentsList ? post.commentsList.length + 1 : 1,
+            commentsList: post.commentsList ? [...post.commentsList, newComment] : [newComment]
+          }
+          : post
+      ));
+    }
+
+    // Clear comment input
+    setCommentInputs(prev => ({
+      ...prev,
+      [postId]: ''
+    }));
+  };
+
+  const toggleComments = (postId) => {
+    setShowComments(prev => ({
+      ...prev,
+      [postId]: !prev[postId]
+    }));
+  };
+
+  // Format time for comments
+  const formatTime = (timestamp) => {
+    const now = new Date();
+    const commentTime = new Date(timestamp);
+    const diffInMinutes = Math.floor((now - commentTime) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+    return `${Math.floor(diffInMinutes / 1440)}d ago`;
+  };
+
+  // Modify the handleShare function to also save to localStorage
+  const handleShare = (postId, isUserPost = false) => {
+    // Update the shared posts data
+    const postIndex = sharedPosts.findIndex(post => post.id === postId);
+    if (postIndex !== -1) {
+      sharedPosts[postIndex].shares += 1;
+      
+      // Save updated posts to localStorage
+      saveSharedPostsToLocalStorage();
+    }
+    
+    // Update UI
+    if (isUserPost) {
+      setUserPosts(posts => posts.map(post =>
+        post.id === postId
+          ? {
+            ...post,
+            shares: post.shares + 1
+          }
+          : post
+      ));
+    } else {
+      setPosts(posts => posts.map(post =>
+        post.id === postId
+          ? {
+            ...post,
+            shares: post.shares + 1
+          }
+          : post
+      ));
+    }
+    
+    // Show confirmation
+    alert('Post shared successfully! (Demo Mode)');
   };
 
   const handleSave = (postId, isUserPost = false) => {
@@ -361,6 +776,60 @@ function Home() {
       ));
     }
   };
+
+  const handleDelete = (postId, isUserPost = false) => {
+    // Confirm before deleting
+    if (!window.confirm('Are you sure you want to delete this post?')) {
+      return;
+    }
+    
+    // Update UI immediately without API call
+    if (isUserPost) {
+      setUserPosts(posts => posts.filter(post => post.id !== postId));
+    } else {
+      setPosts(posts => posts.filter(post => post.id !== postId));
+    }
+    
+    // Also remove from sharedPosts if it's there
+    const sharedPostIndex = sharedPosts.findIndex(post => post.id === postId);
+    if (sharedPostIndex !== -1) {
+      sharedPosts.splice(sharedPostIndex, 1);
+    }
+    
+    // Remove from localStorage as well
+    try {
+      const savedPosts = localStorage.getItem('sharedPosts');
+      if (savedPosts) {
+        const existingPosts = JSON.parse(savedPosts);
+        const updatedPosts = existingPosts.filter(post => post.id !== postId);
+        // Only save back to localStorage if there are still posts remaining
+        // If all user posts are deleted, we still save an empty array to maintain the deleted state
+        localStorage.setItem('sharedPosts', JSON.stringify(updatedPosts));
+      }
+    } catch (error) {
+      console.error('Failed to remove post from localStorage:', error);
+    }
+    
+    alert('Post deleted successfully!');
+  };
+
+  // Handle messaging a user from a post
+  const handleMessageFromPost = (postUserId, postUserName) => {
+    // Navigate to messages page with the user ID
+    navigate(`/messages?userId=${postUserId}`);
+  };
+
+  // Check if the current user is the owner of the post
+  const isPostOwner = (postUserId) => {
+    return authData.user?.id === postUserId;
+  };
+
+  // Check if we can message the post author (not ourselves)
+  const canMessageUser = (postUserId) => {
+    return authData.user?.id !== postUserId;
+  };
+
+
 
   const handleConnect = (connectionId) => {
     setSuggestedConnections(suggestedConnections.filter(conn => conn.id !== connectionId));
@@ -425,7 +894,7 @@ function Home() {
 
   return (
     <div className='min-h-screen bg-[#f3f2f0]'>
-      {edit && <EditProfile />}
+      {edit && <EditProfile setEdit={setEdit} />}
 
       {/* Enhanced Header */}
       <header className="bg-white shadow-sm border-b sticky top-0 z-40">
@@ -703,9 +1172,26 @@ function Home() {
                           </div>
                         </div>
                       </div>
-                      <button className='text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100'>
-                        <FaEllipsisH className='w-4 h-4' />
-                      </button>
+                      <div className='flex space-x-1'>
+                        {canMessageUser(post.userId) && (
+                          <button 
+                            onClick={() => handleMessageFromPost(post.userId, post.user.name)}
+                            className='text-blue-500 hover:text-blue-700 p-2 rounded-full hover:bg-blue-50'
+                            title='Message user'
+                          >
+                            <FaEnvelope className='w-4 h-4' />
+                          </button>
+                        )}
+                        {isPostOwner(post.userId) && (
+                          <button 
+                            onClick={() => handleDelete(post.id, isUserPost)}
+                            className='text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50'
+                            title='Delete post'
+                          >
+                            <FaTrash className='w-4 h-4' />
+                          </button>
+                        )}
+                      </div>
                     </div>
 
                     {/* Post Content */}
@@ -748,7 +1234,7 @@ function Home() {
                   </div>
 
                   {/* Post Actions */}
-                  <div className='px-4 py-2 border-t border-gray-100 grid grid-cols-4 gap-1'>
+                  <div className='px-4 py-2 border-t border-gray-100 grid grid-cols-5 gap-1'>
                     <button
                       onClick={() => handleLike(post.id, isUserPost)}
                       className={`flex items-center justify-center space-x-2 transition-colors py-2 px-4 rounded-lg hover:bg-gray-50 ${post.liked ? 'text-blue-500' : 'text-gray-600 hover:text-blue-500'
@@ -757,13 +1243,27 @@ function Home() {
                       {post.liked ? <FaThumbsUp className='w-4 h-4' /> : <FaRegThumbsUp className='w-4 h-4' />}
                       <span className='font-medium'>Like</span>
                     </button>
-                    <button className='flex items-center justify-center space-x-2 text-gray-600 hover:text-blue-500 transition-colors py-2 px-4 rounded-lg hover:bg-gray-50'>
+                    <button 
+                      onClick={() => toggleComments(post.id)}
+                      className='flex items-center justify-center space-x-2 text-gray-600 hover:text-blue-500 transition-colors py-2 px-4 rounded-lg hover:bg-gray-50'
+                    >
                       <FaRegComment className='w-4 h-4' />
                       <span className='font-medium'>Comment</span>
                     </button>
-                    <button className='flex items-center justify-center space-x-2 text-gray-600 hover:text-blue-500 transition-colors py-2 px-4 rounded-lg hover:bg-gray-50'>
+                    <button 
+                      onClick={() => handleShare(post.id, isUserPost)}
+                      className='flex items-center justify-center space-x-2 text-gray-600 hover:text-blue-500 transition-colors py-2 px-4 rounded-lg hover:bg-gray-50'
+                    >
                       <FaRegShareSquare className='w-4 h-4' />
                       <span className='font-medium'>Share</span>
+                    </button>
+                    <button
+                      onClick={() => handleMessageFromPost(post.userId, post.user.name)}
+                      className='flex items-center justify-center space-x-2 text-gray-600 hover:text-blue-500 transition-colors py-2 px-4 rounded-lg hover:bg-gray-50'
+                      disabled={!canMessageUser(post.userId)}
+                    >
+                      <FaEnvelope className='w-4 h-4' />
+                      <span className='font-medium'>Message</span>
                     </button>
                     <button
                       onClick={() => handleSave(post.id, isUserPost)}
@@ -774,6 +1274,67 @@ function Home() {
                       <span className='font-medium'>Save</span>
                     </button>
                   </div>
+
+                  {/* Comments Section */}
+                  {showComments[post.id] && (
+                    <div className='px-4 py-3 border-t border-gray-100 bg-gray-50'>
+                      {/* Existing Comments */}
+                      {post.commentsList && post.commentsList.map((comment, commentIndex) => (
+                        <div key={`${comment.id}-${commentIndex}`} className='flex space-x-3 mb-3'>
+                          <div className='w-8 h-8 rounded-full overflow-hidden flex-shrink-0'>
+                            <img 
+                              src={comment.user.avatar || dp} 
+                              alt={comment.user.name} 
+                              className='w-full h-full object-cover'
+                            />
+                          </div>
+                          <div className='flex-1'>
+                            <div className='bg-white rounded-lg px-3 py-2 shadow-sm'>
+                              <p className='font-medium text-sm text-gray-900'>{comment.user.name}</p>
+                              <p className='text-sm text-gray-700'>{comment.text}</p>
+                            </div>
+                            <div className='flex space-x-3 mt-1 text-xs text-gray-500'>
+                              <button className='hover:text-gray-700'>Like</button>
+                              <button className='hover:text-gray-700'>Reply</button>
+                              <span>{formatTime(comment.timestamp)}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Add Comment */}
+                      <div className='flex space-x-3 mt-3'>
+                        <div className='w-8 h-8 rounded-full overflow-hidden flex-shrink-0'>
+                          <img 
+                            src={authData.user?.profileImage || dp} 
+                            alt={`${authData.user?.firstName} ${authData.user?.lastName}`} 
+                            className='w-full h-full object-cover'
+                          />
+                        </div>
+                        <div className='flex-1 flex'>
+                          <input
+                            type='text'
+                            value={commentInputs[post.id] || ''}
+                            onChange={(e) => handleCommentChange(post.id, e.target.value)}
+                            placeholder='Add a comment...'
+                            className='flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                handleAddComment(post.id, isUserPost);
+                              }
+                            }}
+                          />
+                          <button
+                            onClick={() => handleAddComment(post.id, isUserPost)}
+                            disabled={!commentInputs[post.id] || commentInputs[post.id]?.trim() === ''}
+                            className='ml-2 bg-blue-500 text-white rounded-full px-4 py-2 text-sm font-medium hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed'
+                          >
+                            Post
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}

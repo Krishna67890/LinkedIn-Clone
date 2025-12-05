@@ -2,7 +2,12 @@ import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { GiSplitCross } from "react-icons/gi";
 import { UserContext } from '../context/UserContext';
+<<<<<<< HEAD
 import dp from "../assets/dp.webp";
+=======
+// Avatar fallback - using a data URI for a simple placeholder avatar
+const dp = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9IiMzYTc5YjciLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjQwIiByPSIyMCIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0zMCA3MEwyNSA5MGg1MEw3MCA3MHoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=';
+>>>>>>> 4df3f66 (Updated LinkedIn clone: added News page and modified components)
 import { AuthContext } from '/src/context/AuthContext.jsx';
 
 function FollowersFollowing() {
@@ -114,9 +119,9 @@ function FollowersFollowing() {
   }, []);
 
   const handleFollow = (userId) => {
-    setFollowers(prev => 
-      prev.map(user => 
-        user._id === userId 
+    setFollowers(prev =>
+      prev.map(user =>
+        user._id === userId
           ? { ...user, isFollowing: !user.isFollowing }
           : user
       )
@@ -126,9 +131,9 @@ function FollowersFollowing() {
   const handleUnfollow = (userId) => {
     setFollowing(prev => prev.filter(user => user._id !== userId));
     // Also update followers list if this user follows back
-    setFollowers(prev => 
-      prev.map(user => 
-        user._id === userId 
+    setFollowers(prev =>
+      prev.map(user =>
+        user._id === userId
           ? { ...user, isFollowing: false }
           : user
       )
@@ -154,7 +159,7 @@ function FollowersFollowing() {
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50'>
       <div className='bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col'>
-        
+
         {/* Header */}
         <div className='flex justify-between items-center p-6 border-b border-gray-200'>
           <div>
@@ -163,7 +168,7 @@ function FollowersFollowing() {
             </h2>
             <p className='text-gray-600 text-sm mt-1'>Manage your connections</p>
           </div>
-          <button 
+          <button
             onClick={() => setEdit(false)}
             className='p-2 hover:bg-gray-100 rounded-full transition-colors'
           >
@@ -176,11 +181,10 @@ function FollowersFollowing() {
           <div className='flex'>
             <button
               onClick={() => setActiveTab('followers')}
-              className={`flex-1 py-4 px-6 text-center font-semibold transition-colors ${
-                activeTab === 'followers'
+              className={`flex-1 py-4 px-6 text-center font-semibold transition-colors ${activeTab === 'followers'
                   ? 'text-blue-600 border-b-2 border-blue-600'
                   : 'text-gray-600 hover:text-gray-900'
-              }`}
+                }`}
             >
               Followers
               <span className='ml-2 text-sm font-normal text-gray-500'>
@@ -189,11 +193,10 @@ function FollowersFollowing() {
             </button>
             <button
               onClick={() => setActiveTab('following')}
-              className={`flex-1 py-4 px-6 text-center font-semibold transition-colors ${
-                activeTab === 'following'
+              className={`flex-1 py-4 px-6 text-center font-semibold transition-colors ${activeTab === 'following'
                   ? 'text-blue-600 border-b-2 border-blue-600'
                   : 'text-gray-600 hover:text-gray-900'
-              }`}
+                }`}
             >
               Following
               <span className='ml-2 text-sm font-normal text-gray-500'>
@@ -237,8 +240,8 @@ function FollowersFollowing() {
                         {searchTerm ? 'No matching followers' : 'No followers yet'}
                       </h3>
                       <p className='text-gray-600'>
-                        {searchTerm 
-                          ? 'Try adjusting your search terms' 
+                        {searchTerm
+                          ? 'Try adjusting your search terms'
                           : 'Start connecting with people to grow your network'
                         }
                       </p>
@@ -248,8 +251,8 @@ function FollowersFollowing() {
                       <div key={user._id} className='flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors'>
                         <div className='flex items-center space-x-4'>
                           <div className='w-12 h-12 rounded-full overflow-hidden'>
-                            <img 
-                              src={user.profileImage || dp} 
+                            <img
+                              src={user.profileImage || dp}
                               alt={`${user.firstName} ${user.lastName}`}
                               className='w-full h-full object-cover'
                             />
@@ -301,8 +304,8 @@ function FollowersFollowing() {
                         {searchTerm ? 'No matching connections' : 'Not following anyone yet'}
                       </h3>
                       <p className='text-gray-600'>
-                        {searchTerm 
-                          ? 'Try adjusting your search terms' 
+                        {searchTerm
+                          ? 'Try adjusting your search terms'
                           : 'Start following people to see their updates'
                         }
                       </p>
@@ -312,8 +315,8 @@ function FollowersFollowing() {
                       <div key={user._id} className='flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors'>
                         <div className='flex items-center space-x-4'>
                           <div className='w-12 h-12 rounded-full overflow-hidden'>
-                            <img 
-                              src={user.profileImage || dp} 
+                            <img
+                              src={user.profileImage || dp}
                               alt={`${user.firstName} ${user.lastName}`}
                               className='w-full h-full object-cover'
                             />

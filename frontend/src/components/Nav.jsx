@@ -1,9 +1,11 @@
 import React, { useContext, useState } from 'react'
-import logo2 from '../assets/logo2.png'
-import { FaSearch, FaHome, FaUser, FaBell, FaSignOutAlt, FaUsers, FaBriefcase, FaEnvelope } from "react-icons/fa";
+// Logo fallback - using a data URI for a simple placeholder logo
+const logo2 = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIj48cmVjdCB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIGZpbGw9IiMwYTZjYjgiLz48dGV4dCB4PSIyNSIgeT0iMzAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkxJPC90ZXh0Pjwvc3ZnPg==';
+import { FaSearch, FaHome, FaUser, FaBell, FaSignOutAlt, FaUsers, FaBriefcase, FaEnvelope, FaRegBookmark } from "react-icons/fa";
 import { IoNotifications } from "react-icons/io5";
-import dp from "../assets/dp.webp"
-//import { useUserData } from '../context/userContext';
+// Avatar fallback - using a data URI for a simple placeholder avatar
+const dp = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9IiMzYTc5YjciLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjQwIiByPSIyMCIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0zMCA3MEwyNSA5MGg1MEw3MCA3MHoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=';
+import { useUserData } from '../context/UserContext';
 import { useAuth } from '../context/AuthContext'; // ✅ Fixed import path
 import axios from 'axios';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
@@ -20,12 +22,8 @@ function Nav() {
 
   const handleSignOut = async () => {
     try {
-      // Try to call backend logout
-      try {
-        await axios.get(serverUrl + "/api/auth/logout", { withCredentials: true })
-      } catch (error) {
-        console.log("Backend logout failed, proceeding with frontend logout");
-      }
+      // Skip backend call for demo application
+      console.log("Skipping backend logout for demo application");
 
       // Clear frontend state using demoLogout from auth context
       demoLogout(); // ✅ Use the demoLogout function from auth context
@@ -197,6 +195,16 @@ function Nav() {
         >
           <FaBriefcase className='w-[23px] h-[23px]' />
           <div className='hidden md:block text-xs mt-1'>Jobs</div>
+        </Link>
+
+        {/* News */}
+        <Link
+          to="/news"
+          className={`flex flex-col items-center justify-center transition-colors p-2 rounded-lg min-w-[60px] ${isActivePath('/news') ? 'text-black font-semibold border-b-2 border-blue-500' : 'text-gray-600 hover:text-black'
+            }`}
+        >
+          <FaRegBookmark className='w-[23px] h-[23px]' />
+          <div className='hidden md:block text-xs mt-1'>News</div>
         </Link>
 
         {/* Messages */}

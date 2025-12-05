@@ -1,14 +1,14 @@
 // components/EditProfile.jsx
 import React, { useState, useRef } from 'react';
-//import { useUserData } from '../context/userContext'; // ✅ Fixed import path
+import { useUserData } from '../context/UserContext';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { GiSplitCross } from "react-icons/gi";
 import { FaCamera, FaSave, FaTimes } from "react-icons/fa";
 
-function EditProfile() {
-  const { userData, setUserData, setEdit } = useUserData(); // ✅ Fixed - use custom hook
-  const { serverUrl } = useAuth();
+function EditProfile({ setEdit }) {
+  const { userData, setUserData } = useUserData();
+  const { serverUrl, setAuthData } = useAuth();
 
   const [formData, setFormData] = useState({
     firstName: userData?.firstName || "",
@@ -16,7 +16,15 @@ function EditProfile() {
     headline: userData?.headline || "",
     location: userData?.location || "",
     company: userData?.company || "",
-    skills: userData?.skills?.join(', ') || ""
+    currentPosition: userData?.currentPosition || "",
+    industry: userData?.industry || "",
+    website: userData?.website || "",
+    phone: userData?.phone || "",
+    email: userData?.email || "",
+    about: userData?.about || "",
+    skills: userData?.skills?.join(', ') || "",
+    education: userData?.education || [],
+    experience: userData?.experience || []
   });
 
   const [profileImage, setProfileImage] = useState(userData?.profileImage || null);
@@ -32,7 +40,7 @@ function EditProfile() {
   };
 
   const handleImage = (e) => {
-    const file = e.target.files[0];
+    let file = e.target.files[0]
     if (file) {
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
@@ -47,7 +55,13 @@ function EditProfile() {
       }
 
       setProfileImage(file);
-      setFrontendImage(URL.createObjectURL(file));
+      
+      // Convert file to data URL for persistence
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setFrontendImage(event.target.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -64,14 +78,25 @@ function EditProfile() {
       // Update user data locally for demo
       const updatedUser = {
         ...userData,
-        ...formData,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        headline: formData.headline,
+        location: formData.location,
+        company: formData.company,
+        currentPosition: formData.currentPosition,
+        industry: formData.industry,
+        website: formData.website,
+        phone: formData.phone,
+        email: formData.email,
+        about: formData.about,
         skills: formData.skills.split(',').map(skill => skill.trim()).filter(skill => skill),
         profileImage: frontendImage || userData?.profileImage
       };
 
+      // Update both UserContext and AuthContext
       setUserData(updatedUser);
 
-      // Update localStorage for persistence
+      // Update localStorage directly for persistence
       const currentDemoUser = localStorage.getItem('demoUser');
       if (currentDemoUser) {
         const demoUser = JSON.parse(currentDemoUser);
@@ -79,8 +104,10 @@ function EditProfile() {
         localStorage.setItem('demoUser', JSON.stringify(updatedDemoUser));
       }
 
+      // Revoke blob URL after successful upload
+      // No need to revoke blob URLs since we're using data URLs
       alert('Profile updated successfully!');
-      setEdit(false);
+      setEdit && setEdit(false);
 
     } catch (error) {
       console.error('❌ Error updating profile:', error);
@@ -105,7 +132,7 @@ function EditProfile() {
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">Edit Profile</h2>
           <button
-            onClick={() => setEdit(false)}
+            onClick={() => setEdit && setEdit(false)}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
             <GiSplitCross className="w-6 h-6" />
@@ -160,100 +187,205 @@ function EditProfile() {
           </div>
 
           {/* Form Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* First Name */}
+          <div className="space-y-6">
+            {/* Basic Information Section */}
+            <div className="border-b border-gray-200 pb-4">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* First Name */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    First Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter your first name"
+                  />
+                </div>
+
+                {/* Last Name */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Last Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter your last name"
+                  />
+                </div>
+
+                {/* Headline */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Headline
+                  </label>
+                  <input
+                    type="text"
+                    name="headline"
+                    value={formData.headline}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="e.g., Software Engineer at Google"
+                  />
+                </div>
+
+                {/* About */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    About
+                  </label>
+                  <textarea
+                    name="about"
+                    value={formData.about}
+                    onChange={handleChange}
+                    rows={4}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                    placeholder="Tell us about yourself..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Information Section */}
+            <div className="border-b border-gray-200 pb-4">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Contact Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Location */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="e.g., San Francisco, CA"
+                  />
+                </div>
+
+                {/* Industry */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Industry
+                  </label>
+                  <input
+                    type="text"
+                    name="industry"
+                    value={formData.industry}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="e.g., Information Technology"
+                  />
+                </div>
+
+                {/* Current Position */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Current Position
+                  </label>
+                  <input
+                    type="text"
+                    name="currentPosition"
+                    value={formData.currentPosition}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="e.g., Senior Software Engineer"
+                  />
+                </div>
+
+                {/* Company */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Company
+                  </label>
+                  <input
+                    type="text"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="e.g., Google"
+                  />
+                </div>
+
+                {/* Website */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Website
+                  </label>
+                  <input
+                    type="url"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="https://yourwebsite.com"
+                  />
+                </div>
+
+                {/* Phone */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="+1 (555) 123-4567"
+                  />
+                </div>
+
+                {/* Email */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="you@example.com"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Skills Section */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                First Name *
-              </label>
-              <input
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter your first name"
-              />
-            </div>
-
-            {/* Last Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Last Name *
-              </label>
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter your last name"
-              />
-            </div>
-
-            {/* Headline */}
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Headline
-              </label>
-              <input
-                type="text"
-                name="headline"
-                value={formData.headline}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g., Software Engineer at Google"
-              />
-            </div>
-
-            {/* Location */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Location
-              </label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g., San Francisco, CA"
-              />
-            </div>
-
-            {/* Company */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Company
-              </label>
-              <input
-                type="text"
-                name="company"
-                value={formData.company}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g., Google"
-              />
-            </div>
-
-            {/* Skills */}
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Skills (comma separated)
-              </label>
-              <textarea
-                name="skills"
-                value={formData.skills}
-                onChange={handleChange}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-                placeholder="e.g., JavaScript, React, Node.js, Python"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Separate multiple skills with commas
-              </p>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Skills</h3>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Skills (comma separated)
+                </label>
+                <textarea
+                  name="skills"
+                  value={formData.skills}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  placeholder="e.g., JavaScript, React, Node.js, Python"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Separate multiple skills with commas
+                </p>
+              </div>
             </div>
           </div>
 

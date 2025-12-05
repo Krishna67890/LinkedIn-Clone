@@ -7,8 +7,13 @@ import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const [show, setShow] = useState(false);
+<<<<<<< HEAD
   const { userData, setUserData } = useUserData(); 
   const { demoLogin } = useAuth();
+=======
+  const { userData, setUserData } = useUserData();
+  const { demoLogin } = useAuth(); // Get demoLogin from useAuth hook
+>>>>>>> 4df3f66 (Updated LinkedIn clone: added News page and modified components)
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,14 +28,14 @@ function Login() {
       email: "krishna@demo.com",
       userName: "krishnapatil",
       password: "demo123",
-      headline: "Full Stack Developer & Tech Enthusiast",
+      headline: "Senior Full Stack Developer & Tech Evangelist",
       location: "Pune, Maharashtra, India",
       profileImage: null,
-      skills: ["JavaScript", "React", "Node.js", "Python", "MongoDB"],
-      followersCount: 324,
-      followingCount: 156,
-      connectionsCount: 287,
-      joinedDate: "2023-01-15",
+      skills: ["JavaScript", "React", "Node.js", "Python", "MongoDB", "AWS", "Docker"],
+      followersCount: 456,
+      followingCount: 234,
+      connectionsCount: 389,
+      joinedDate: "2021-06-15",
       lastActive: new Date().toISOString()
     },
     {
@@ -39,14 +44,46 @@ function Login() {
       email: "atharva@demo.com",
       userName: "atharvapatil",
       password: "demo123",
-      headline: "Software Engineer & Open Source Contributor",
+      headline: "Software Engineer & AI/ML Specialist",
       location: "Mumbai, Maharashtra, India",
       profileImage: null,
-      skills: ["Java", "Spring Boot", "AWS", "Docker", "Kubernetes"],
-      followersCount: 189,
-      followingCount: 234,
-      connectionsCount: 156,
-      joinedDate: "2023-02-20",
+      skills: ["Python", "Machine Learning", "TensorFlow", "PyTorch", "Java", "Spring Boot"],
+      followersCount: 289,
+      followingCount: 167,
+      connectionsCount: 312,
+      joinedDate: "2021-08-20",
+      lastActive: new Date().toISOString()
+    },
+    {
+      firstName: "Ankush",
+      lastName: "Khakale",
+      email: "ankush@demo.com",
+      userName: "ankushkhakale",
+      password: "demo123",
+      headline: "Frontend Developer & UI/UX Designer",
+      location: "Bangalore, Karnataka, India",
+      profileImage: null,
+      skills: ["JavaScript", "React", "Vue.js", "CSS", "Tailwind CSS", "Figma", "Adobe XD"],
+      followersCount: 324,
+      followingCount: 187,
+      connectionsCount: 265,
+      joinedDate: "2021-09-15",
+      lastActive: new Date().toISOString()
+    },
+    {
+      firstName: "Mahesh",
+      lastName: "Vispute",
+      email: "mahesh@demo.com",
+      userName: "maheshvispute",
+      password: "demo123",
+      headline: "Backend Engineer & Database Specialist",
+      location: "Hyderabad, Telangana, India",
+      profileImage: null,
+      skills: ["Java", "Spring Boot", "MySQL", "PostgreSQL", "MongoDB", "Redis", "Kafka"],
+      followersCount: 215,
+      followingCount: 178,
+      connectionsCount: 196,
+      joinedDate: "2022-03-10",
       lastActive: new Date().toISOString()
     }
   ];
@@ -170,6 +207,38 @@ function Login() {
                   </>
                 )}
               </button>
+              <button
+                onClick={() => quickLogin(2)}
+                disabled={loading}
+                className="w-full bg-yellow-100 text-yellow-700 py-3 px-4 rounded text-sm font-medium hover:bg-yellow-200 transition-colors disabled:opacity-50 flex items-center justify-center"
+              >
+                {loading ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 border-2 border-yellow-700 border-t-transparent rounded-full animate-spin"></div>
+                    <span>Signing in as Ankush...</span>
+                  </div>
+                ) : (
+                  <>
+                    <span>👨‍🎨 Ankush Khakale</span>
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => quickLogin(3)}
+                disabled={loading}
+                className="w-full bg-purple-100 text-purple-700 py-3 px-4 rounded text-sm font-medium hover:bg-purple-200 transition-colors disabled:opacity-50 flex items-center justify-center"
+              >
+                {loading ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 border-2 border-purple-700 border-t-transparent rounded-full animate-spin"></div>
+                    <span>Signing in as Mahesh...</span>
+                  </div>
+                ) : (
+                  <>
+                    <span>👨‍💻 Mahesh Vispute</span>
+                  </>
+                )}
+              </button>
             </div>
             <p className="text-xs text-blue-600 mt-2 text-center">
               Password: demo123 (Auto-filled)
@@ -216,7 +285,7 @@ function Login() {
               <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
                 <p className="text-xs text-gray-600 text-center">
                   <strong>Demo Credentials:</strong><br />
-                  krishna@demo.com / atharva@demo.com<br />
+                  krishna@demo.com / atharva@demo.com / ankush@demo.com / mahesh@demo.com<br />
                   Password: demo123
                 </p>
               </div>

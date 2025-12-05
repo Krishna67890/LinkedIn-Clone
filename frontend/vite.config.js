@@ -5,7 +5,7 @@ import { resolve } from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: './',
+  base: './', // Changed back to './' for relative paths
 
   build: {
     outDir: 'dist',
@@ -38,9 +38,4 @@ export default defineConfig({
       '@context': resolve(__dirname, 'src/context'),
     },
   },
-
-  // ✅ REMOVED problematic esbuild configuration
-  // esbuild: {
-  //   pure: ['console.log', 'debugger'], // This was causing the issue
-  // },
 })
