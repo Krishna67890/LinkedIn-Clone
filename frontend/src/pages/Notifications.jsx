@@ -1,6 +1,6 @@
 // src/pages/Notifications.jsx
 import React, { useState, useEffect } from 'react';
-// import { useUserData } from '../context/userContext';
+import { useUserData } from '../context/UserContext';
 import { Link } from 'react-router-dom';
 import { FaCheck, FaTimes, FaRegBell, FaBell, FaTrash } from "react-icons/fa";
 
@@ -91,6 +91,14 @@ function Notifications() {
       message: 'mentioned you in a post',
       color: 'yellow',
       icon: '👤',
+      actionRequired: false
+    },
+    {
+      type: 'job_alert',
+      title: 'Job Alert',
+      message: 'new job matches your preferences',
+      color: 'indigo',
+      icon: '💼',
       actionRequired: false
     }
   ];
@@ -233,7 +241,8 @@ function Notifications() {
       green: 'bg-green-100 text-green-600',
       purple: 'bg-purple-100 text-purple-600',
       orange: 'bg-orange-100 text-orange-600',
-      yellow: 'bg-yellow-100 text-yellow-600'
+      yellow: 'bg-yellow-100 text-yellow-600',
+      indigo: 'bg-indigo-100 text-indigo-600'
     };
     return colorMap[color] || 'bg-blue-100 text-blue-600';
   };

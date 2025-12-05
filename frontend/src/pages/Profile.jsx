@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import FollowersFollowing from '../components/FollowersFollowing';
 import EditProfile from '../components/EditProfile';
 import Nav from '../components/Nav';
-import dp from "../assets/dp.webp";
+// Avatar fallback - using a data URI for a simple placeholder avatar
+const dp = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9IiMzYTc5YjciLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjQwIiByPSIyMCIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0zMCA3MEwyNSA5MGg1MEw3MCA3MHoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=';
 import { Link } from 'react-router-dom';
 import { CiCamera, CiCirclePlus, CiWarning, CiLogout, CiGlobe } from "react-icons/ci";
 import { GiSplitCross } from "react-icons/gi";

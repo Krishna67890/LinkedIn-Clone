@@ -1,10 +1,11 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
-// import { useUserData } from '../context/userContext'; // ✅ Use custom hook
-import dp from "../assets/dp.webp";
+import { useUserData } from '../context/UserContext';
+// Avatar fallback - using a data URI for a simple placeholder avatar
+const dp = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNTAiIGZpbGw9IiMzYTc5YjciLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjQwIiByPSIyMCIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik0zMCA3MEwyNSA5MGg1MEw3MCA3MHoiIGZpbGw9IiNmZmYiLz48L3N2Zz4=';
 import { Link } from 'react-router-dom';
 
 function MyNetwork() {
-  // const { userData } = useUserData(); // ✅ Fixed - use custom hook
+  const { userData } = useUserData();
   const [activeTab, setActiveTab] = useState('connections');
   const [connections, setConnections] = useState([]);
   const [invitations, setInvitations] = useState([]);
@@ -184,7 +185,39 @@ function MyNetwork() {
 
   const handleMessage = (userId) => {
     console.log('Message user:', userId);
-    // Implement messaging functionality
+    // Find the user to message
+    const user = connections.find(conn => conn._id === userId) || 
+                 followers.find(fol => fol._id === userId) ||
+                 following.find(fol => fol._id === userId) ||
+                 suggestions.find(sug => sug._id === userId);
+    
+    if (user) {
+      // In a real app, this would navigate to the messages page with the user
+      console.log(`Opening chat with ${user.firstName} ${user.lastName}`);
+      // For demo purposes, we'll just show an alert
+      alert(`Opening chat with ${user.firstName} ${user.lastName}`);
+      
+      // Create a notification that a message was sent
+      const messageNotification = {
+        _id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+        title: 'Message Sent',
+        message: `You sent a message to ${user.firstName} ${user.lastName}`,
+        type: 'message',
+        isRead: false,
+        timestamp: new Date().toISOString(),
+        color: 'purple',
+        icon: '📩',
+        user: {
+          profileImage: user.profileImage || dp,
+          firstName: user.firstName,
+          lastName: user.lastName
+        },
+        actionRequired: false
+      };
+      
+      // In a real app, we would add this to the notifications
+      console.log('Message notification created:', messageNotification);
+    }
   };
 
   const getTimeAgo = (timestamp) => {
