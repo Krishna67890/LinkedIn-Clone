@@ -7,8 +7,18 @@ import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const [show, setShow] = useState(false);
+<<<<<<< HEAD
   const { userData, setUserData } = useUserData();
   const { demoLogin } = useAuth(); // Get demoLogin from useAuth hook
+=======
+<<<<<<< HEAD
+  const { userData, setUserData } = useUserData(); 
+  const { demoLogin } = useAuth();
+=======
+  const { userData, setUserData } = useUserData();
+  const { demoLogin } = useAuth(); // Get demoLogin from useAuth hook
+>>>>>>> 4df3f66 (Updated LinkedIn clone: added News page and modified components)
+>>>>>>> b4827ad05637f1472486f5c55a85e7eb1221d5c3
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
